@@ -1,11 +1,10 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { invoke } from '@tauri-apps/api/tauri';
+import { useState } from 'react';
+import reactLogo from './assets/react.svg';
+// import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  
+  const [count, setCount] = useState(0);
 
   return (
     <div className="App">
@@ -18,6 +17,15 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
+      <div
+        onClick={() => {
+          invoke('my_custom_command').then((v) => {
+            console.log(v);
+          });
+        }}
+      >
+        demo
+      </div>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
@@ -30,7 +38,7 @@ function App() {
         Click on the Vite and React logos to learn more
       </p>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
