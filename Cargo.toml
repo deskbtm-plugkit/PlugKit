@@ -1,2 +1,2 @@
 [workspace]
-members = ["src/windows/src-tauri"]
+members = ["src/windows/src-tauri", "core"]
