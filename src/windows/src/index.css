@@ -31,7 +31,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   
-  background-color: #535bf265;
+  /* background-color: #535bf265; */
 }
 
 h1 {
@@ -46,7 +46,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  /* background-color: #1a1a1a; */
   cursor: pointer;
   transition: border-color 0.25s;
 }

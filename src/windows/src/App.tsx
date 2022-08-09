@@ -16,7 +16,7 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
-      <div
+      <button
         onClick={() => {
           invoke('my_custom_command').then((v) => {
             console.log(v);
@@ -24,18 +24,7 @@ function App() {
         }}
       >
         demo
-      </div>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      </button>
     </div>
   );
 }

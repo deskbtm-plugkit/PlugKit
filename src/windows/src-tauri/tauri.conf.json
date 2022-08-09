@@ -55,12 +55,13 @@
     },
     "windows": [
       {
+        "label": "main",
         "fullscreen": false,
         "height": 600,
         "resizable": true,
         "center": true,
-        "transparent": true,
-        "decorations": false,
+        "transparent": false,
+        "decorations": true,
         "title": "deskbtm",
         "width": 800
       }
