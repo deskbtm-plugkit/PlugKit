@@ -47,15 +47,7 @@ fn my_custom_command(app_handle: AppHandle) -> isize {
     main_window.hwnd().unwrap().0
 }
 
-fn is_hello<T: Into<Vec<u8>>>(s: T) {
-    let bytes = b"hello".to_vec();
-    assert_eq!(bytes, s.into());
-}
-
 fn main() {
-    let s = "hello".to_string();
-    is_hello(s);
-
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![my_custom_command])
         .run(tauri::generate_context!())

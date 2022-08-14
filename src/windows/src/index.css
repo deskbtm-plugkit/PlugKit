@@ -25,13 +25,13 @@ a:hover {
 } */
 
 body {
-  margin: 0;
+  /* margin: 0;
   display: flex;
   place-items: center;
   min-width: 320px;
-  min-height: 100vh;
+  min-height: 100vh; */
   
-  /* background-color: #535bf265; */
+  background-color: #ffffff00;
 }
 
 h1 {
