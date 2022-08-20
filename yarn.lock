@@ -379,29 +379,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deskbtm/core@workspace:core":
-  version: 0.0.0-use.local
-  resolution: "@deskbtm/core@workspace:core"
-  languageName: unknown
-  linkType: soft
-
-"@deskbtm/windows@workspace:src/windows":
-  version: 0.0.0-use.local
-  resolution: "@deskbtm/windows@workspace:src/windows"
-  dependencies:
-    "@tauri-apps/api": ^1.0.2
-    "@tauri-apps/cli": ^1.0.5
-    "@types/react": ^18.0.15
-    "@types/react-dom": ^18.0.6
-    "@vitejs/plugin-react": ^2.0.0
-    antd: ^4.22.4
-    react: ^18.2.0
-    react-dom: ^18.2.0
-    typescript: ^4.6.4
-    vite: ^3.0.0
-  languageName: unknown
-  linkType: soft
-
 "@eslint/eslintrc@npm:^0.4.3":
   version: 0.4.3
   resolution: "@eslint/eslintrc@npm:0.4.3"
@@ -672,6 +649,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:^18.7.6":
+  version: 18.7.6
+  resolution: "@types/node@npm:18.7.6"
+  checksum: 5122988c325eda8d1f5cbe4494916036aae1758f9d5bb2d8139a800b8bad1540fbb167cd3c759da9a5cb4600cd3507609ac7969747113c1549a3e4320a17b1a9
+  languageName: node
+  linkType: hard
+
 "@types/prop-types@npm:*":
   version: 15.7.5
   resolution: "@types/prop-types@npm:15.7.5"
@@ -828,6 +812,45 @@ __metadata:
   checksum: a4a97ec07d7ea112c517036882b2ac22f3109b7b19077dc656316d07d308438aac28e4d9746dc4d84bf6b1e75b4a7b0a5f3cb30592419f128ca9a8cee3bcfa17
   languageName: node
   linkType: hard
+
+"abyss-core@workspace:core":
+  version: 0.0.0-use.local
+  resolution: "abyss-core@workspace:core"
+  languageName: unknown
+  linkType: soft
+
+"abyss-gui@workspace:app":
+  version: 0.0.0-use.local
+  resolution: "abyss-gui@workspace:app"
+  dependencies:
+    "@tauri-apps/api": ^1.0.2
+    "@tauri-apps/cli": ^1.0.5
+    "@types/node": ^18.7.6
+    "@types/react": ^18.0.15
+    "@types/react-dom": ^18.0.6
+    "@vitejs/plugin-react": ^2.0.0
+    antd: ^4.22.4
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    typescript: ^4.6.4
+    vite: ^3.0.0
+  languageName: unknown
+  linkType: soft
+
+"abyss@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "abyss@workspace:."
+  dependencies:
+    "@typescript-eslint/eslint-plugin": 4.31.1
+    "@typescript-eslint/parser": 4.31.1
+    eslint: 7.32.0
+    eslint-config-prettier: ^8.3.0
+    eslint-plugin-import: ^2.24.2
+    eslint-plugin-unused-imports: ^1.1.4
+    prettier: ^2.4.0
+    typescript: ^4.6.3
+  languageName: unknown
+  linkType: soft
 
 "acorn-jsx@npm:^5.3.1":
   version: 5.3.2
@@ -1380,21 +1403,6 @@ __metadata:
   checksum: 6b406620d269619852885ce15965272b829df6f409724415e0002c8632ab6a8c0a08ec1f0bd2add05dc7bd7507606f7e2cc034fa24224ab829580040b835ecd9
   languageName: node
   linkType: hard
-
-"deskbtm@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "deskbtm@workspace:."
-  dependencies:
-    "@typescript-eslint/eslint-plugin": 4.31.1
-    "@typescript-eslint/parser": 4.31.1
-    eslint: 7.32.0
-    eslint-config-prettier: ^8.3.0
-    eslint-plugin-import: ^2.24.2
-    eslint-plugin-unused-imports: ^1.1.4
-    prettier: ^2.4.0
-    typescript: ^4.6.3
-  languageName: unknown
-  linkType: soft
 
 "dir-glob@npm:^3.0.1":
   version: 3.0.1
