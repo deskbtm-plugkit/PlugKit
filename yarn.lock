@@ -5,6 +5,42 @@ __metadata:
   version: 6
   cacheKey: 8
 
+"@abyss-ext/danmaku-notification@workspace:built-in/danmaku":
+  version: 0.0.0-use.local
+  resolution: "@abyss-ext/danmaku-notification@workspace:built-in/danmaku"
+  languageName: unknown
+  linkType: soft
+
+"@abyss-ext/wallpaper@workspace:built-in/wallpaper":
+  version: 0.0.0-use.local
+  resolution: "@abyss-ext/wallpaper@workspace:built-in/wallpaper"
+  languageName: unknown
+  linkType: soft
+
+"@abyss/app@workspace:app":
+  version: 0.0.0-use.local
+  resolution: "@abyss/app@workspace:app"
+  dependencies:
+    "@tauri-apps/api": ^1.0.2
+    "@tauri-apps/cli": ^1.0.5
+    "@types/node": ^18.7.6
+    "@types/react": ^18.0.15
+    "@types/react-dom": ^18.0.6
+    "@vitejs/plugin-react": ^2.0.0
+    antd: ^4.22.4
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    typescript: ^4.6.4
+    vite: ^3.0.0
+  languageName: unknown
+  linkType: soft
+
+"@abyss/core@workspace:core":
+  version: 0.0.0-use.local
+  resolution: "@abyss/core@workspace:core"
+  languageName: unknown
+  linkType: soft
+
 "@ampproject/remapping@npm:^2.1.0":
   version: 2.2.0
   resolution: "@ampproject/remapping@npm:2.2.0"
@@ -812,30 +848,6 @@ __metadata:
   checksum: a4a97ec07d7ea112c517036882b2ac22f3109b7b19077dc656316d07d308438aac28e4d9746dc4d84bf6b1e75b4a7b0a5f3cb30592419f128ca9a8cee3bcfa17
   languageName: node
   linkType: hard
-
-"abyss-core@workspace:core":
-  version: 0.0.0-use.local
-  resolution: "abyss-core@workspace:core"
-  languageName: unknown
-  linkType: soft
-
-"abyss-gui@workspace:app":
-  version: 0.0.0-use.local
-  resolution: "abyss-gui@workspace:app"
-  dependencies:
-    "@tauri-apps/api": ^1.0.2
-    "@tauri-apps/cli": ^1.0.5
-    "@types/node": ^18.7.6
-    "@types/react": ^18.0.15
-    "@types/react-dom": ^18.0.6
-    "@vitejs/plugin-react": ^2.0.0
-    antd: ^4.22.4
-    react: ^18.2.0
-    react-dom: ^18.2.0
-    typescript: ^4.6.4
-    vite: ^3.0.0
-  languageName: unknown
-  linkType: soft
 
 "abyss@workspace:.":
   version: 0.0.0-use.local

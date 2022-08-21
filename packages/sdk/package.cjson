@@ -1,0 +1,51 @@
+{
+  "name": "@abyss-ext/sdk",
+  "version": "1.0.0",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "description": "",
+  "abyss": {
+    "targetVersion": ">=1.2.9 <2.0.0",
+    "packageName": "com.demo.fuck",
+    "description": "百年漫画 多多喵插件实例",
+    // 插件详情描述
+    "funcDescription": [
+      "1. xxxx",
+      "2. xxxx"
+    ],
+    // Cover image url for exhibition 
+    "cover": [
+      ""
+    ],
+    //* 插件展示名
+    "displayName": "Abyss Wallpaper",
+    //   更新信息 or 
+    "changelog": "",
+    // 插件的原始站点
+    "sourceSite": "",
+    // 权限
+    "permissions": [
+      "abyss."
+    ],
+    "author": {
+      // *展示名
+      "displayName": "Han",
+      //  头像
+      "avatar": "https://s.gravatar.com/avatar/c87c2708e02af645afe70b5ac862d60a?size=496&default=retro",
+      // 赞助二维链接
+      "sponsorQrCodeImageUri": [
+        "https://gitee.com/sewerganger/picture/blob/master/pay.jpg"
+      ],
+      // 跳转支付app scheme
+      "sponsorUri": "alipayqr://platformapi/startapp?saId=10000007&qrcode=https://qr.alipay.com/tsx12024wt2admr8ftunwe4",
+      // 邮箱
+      "email": "wanghan9423@outlook.com",
+      // 预留文案  随意填写
+      "backupDescription": "QQ: 942341345"
+    }
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "name": "abyss-gui",
+  "name": "@abyss/app",
   "private": true,
   "version": "0.0.0",
   "type": "module",
