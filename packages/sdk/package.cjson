@@ -1,5 +1,5 @@
 {
-  "name": "@abyss-ext/sdk",
+  "name": "@abyss-builtin/sdk",
   "version": "1.0.0",
   "main": "",
   "scripts": {
@@ -23,14 +23,17 @@
     ],
     //* 插件展示名
     "displayName": "Abyss Wallpaper",
-    //   更新信息 or 
+    //   更新信息 or CHANGELOG路径
     "changelog": "",
     // 插件的原始站点
     "sourceSite": "",
     // 权限
     "permissions": [
-      "abyss."
+      "abyss"
     ],
+    // 应用中将用于网络请求的域
+    "domainList": [],
+    "mode": [],
     "author": {
       // *展示名
       "displayName": "Han",

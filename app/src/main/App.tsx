@@ -1,22 +1,15 @@
 // import { invoke } from '@tauri-apps/api/tauri';
 import { useRef, useState } from 'react';
-import { Select } from 'antd';
 import React from 'react';
-import 'antd';
-import 'antd/dist/antd.css';
 import { appWindow } from '@tauri-apps/api/window';
 import { appDir, join, homeDir, resolve } from '@tauri-apps/api/path';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
-import { invoke } from '@tauri-apps/api';
+import { app, invoke } from '@tauri-apps/api';
 import { WebviewWindow } from '@tauri-apps/api/window';
 import './App.css';
-
-const { Option } = Select;
+import { Route, BrowserRouter, Routes, useNavigate } from 'react-router-dom';
 
 const children: React.ReactNode[] = [];
-for (let i = 10; i < 36; i++) {
-  children.push(<Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>);
-}
 
 appWindow.listen<string>('state-changed', (event) => {
   console.log(`Got error: `, event);
@@ -26,13 +19,33 @@ const handleChange = (value: string) => {
   console.log(`selected ${value}`);
 };
 
-function App() {
+function Page1() {
   const [count, setCount] = useState(0);
   const [url, setUrl] = useState<string | null>(null);
   const ref = useRef<HTMLDivElement>(null);
 
+  const navigate = useNavigate();
+  // appWindow.show();
+
   return (
     <div className="App">
+      <div data-tauri-drag-region className="titlebar">
+        <div className="titlebar-button" id="titlebar-minimize">
+          <img
+            src="https://api.iconify.design/mdi:window-minimize.svg"
+            alt="minimize"
+          />
+        </div>
+        <div className="titlebar-button" id="titlebar-maximize">
+          <img
+            src="https://api.iconify.design/mdi:window-maximize.svg"
+            alt="maximize"
+          />
+        </div>
+        <div className="titlebar-button" id="titlebar-close">
+          <img src="https://api.iconify.design/mdi:close.svg" alt="close" />
+        </div>
+      </div>
       {/* <button
         onClick={async () => {
           const r = await invoke('my_custom_command');
@@ -42,6 +55,14 @@ function App() {
         click
       </button> */}
       <div ref={ref}></div>
+
+      <button
+        onClick={() => {
+          navigate('/page2');
+        }}
+      >
+        Demo
+      </button>
       {/* <iframe src="" frameBorder="0"></iframe> */}
       <button
         onClick={() => {
@@ -53,6 +74,13 @@ function App() {
         }}
       >
         new Window
+      </button>
+      <button
+        onClick={() => {
+          appWindow.hide();
+        }}
+      >
+        Hide
       </button>
       <button
         onClick={async () => {
@@ -80,11 +108,18 @@ function App() {
 
           setUrl(htmlUri);
           console.log(htmlUri);
+          await appWindow.setFullscreen(true);
+          // await appWindow.maximize();
+
+          // await appWindow.setSize()
+
+          setTimeout(async () => {
+            const r = await invoke('my_custom_command');
+          }, 4000);
 
           // console.log(ref.current);
           // ref.current!.innerHTML =
           //   '<iframe id="inlineFrameExample" title="Inline Frame Example" width="300" height="200" src="http://www.baidu.com"></iframe>';
-          // const r = await invoke('my_custom_command');
           // console.log(r);
         }}
       >
@@ -111,6 +146,24 @@ function App() {
         }}
       ></div>
     </div>
+  );
+}
+
+function Page2() {
+  return <div>Page2</div>;
+}
+
+function App() {
+  console.log('------------------');
+  return (
+    <BrowserRouter basename="/app/src">
+      <Routes>
+        <Route path="/">
+          <Route index element={<Page1 />} />
+          <Route path="/page2" element={<Page2 />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 

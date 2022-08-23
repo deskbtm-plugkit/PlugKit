@@ -1,5 +1,5 @@
 {
-  "name": "@abyss-ext/wallpaper",
+  "name": "@abyss-builtin/wallpaper",
   "version": "1.0.0",
   "main": "dist/index.html",
   "scripts": {

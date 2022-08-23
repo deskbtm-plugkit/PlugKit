@@ -4,10 +4,15 @@
 )]
 
 use tauri::{command, AppHandle, Manager};
+use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem};
+use tauri::{Menu, MenuItem, Submenu};
+use tauri::{SystemTray, WindowBuilder, WindowUrl};
 use windows::core::PCWSTR;
 use windows::w;
 use windows::Win32::Foundation::{BOOL, HWND, LPARAM, WPARAM};
 use windows::Win32::UI::WindowsAndMessaging::*;
+
+struct DeskbtmWindowManager {}
 
 fn split_window_workw(hwnd: HWND) {
   unsafe {
@@ -31,7 +36,7 @@ fn set_deskbtm(target: HWND) {
 static mut shell_window: HWND = HWND(0);
 static mut sys_list_window: HWND = HWND(0);
 
-  // This name is from the made in abyss, see the deepest point (奈落之底)
+// This name is from the made in abyss, see the deepest point (奈落之底)
 static mut deepest_point: HWND = HWND(0);
 
 extern "system" fn enum_window_proc(window: HWND, _: LPARAM) -> BOOL {
@@ -109,8 +114,28 @@ fn plugin_case(app_handle: AppHandle) -> String {
   String::from("==========")
 }
 
+struct RequestDefender {}
+
 fn main() {
+  let quit = CustomMenuItem::new("quit".to_string(), "Quit");
+  let hide = CustomMenuItem::new("hide".to_string(), "Hide");
+  let tray_menu = SystemTrayMenu::new()
+    .add_item(quit)
+    .add_native_item(SystemTrayMenuItem::Separator)
+    .add_item(hide);
+
+  let tray = SystemTray::new().with_menu(tray_menu);
+
   tauri::Builder::default()
+    .system_tray(tray)
+    .setup(|app| {
+      let main_window = app.get_window("main").unwrap();
+      main_window.config();
+
+      WindowBuilder::new(app, "core", WindowUrl::App("index.html".into()))
+        .on_web_resource_request(|request, response| {});
+      Ok(())
+    })
     .invoke_handler(tauri::generate_handler![my_custom_command, plugin_case])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

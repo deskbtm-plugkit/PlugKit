@@ -3,7 +3,8 @@
   "build": {
     "beforeBuildCommand": "yarn build",
     "beforeDevCommand": "yarn dev",
-    "devPath": "http://localhost:5173",
+    "withGlobalTauri": true,
+    "devPath": "http://127.0.0.1:5173/app/src/",
     "distDir": "../dist"
   },
   "package": {
@@ -20,6 +21,10 @@
           "**"
         ]
       }
+    },
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
     },
     "bundle": {
       "active": true,
@@ -55,8 +60,8 @@
       }
     },
     "security": {
-      "csp": "default-src 'self asset: https://asset.localhost'",
-      "devCsp": "default-src 'self asset: https://asset.localhost'"
+      "csp": "default-src 'self' asset: https://asset.localhost'",
+      "devCsp": "default-src 'self' asset: https://asset.localhost'"
     },
     "updater": {
       "active": false
@@ -64,9 +69,12 @@
     "windows": [
       {
         "label": "main",
+        "url": "app/src",
         "fullscreen": false,
         "height": 600,
-        "width": 800,
+        "width": 850,
+        "minHeight": 600,
+        "minWidth": 850,
         "resizable": true,
         "center": true,
         "transparent": true,

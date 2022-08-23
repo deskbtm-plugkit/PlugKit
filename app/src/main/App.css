@@ -35,6 +35,12 @@
   }
 }
 
+.titlebar {}
+
+.titlebar-button {
+  display: inline-block;
+}
+
 .card {
   padding: 2em;
 }
