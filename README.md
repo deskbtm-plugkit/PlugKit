@@ -1,4 +1,4 @@
-<a href="#" target="_blank" rel="noopener noreferrer"><img width="60" src="./logo.svg" alt="Nawb" /></a>
+<a href="#" target="_blank" rel="noopener noreferrer"><img width="90" src="https://s2.loli.net/2022/08/23/bXyJTn7k8YV2qgm.png" alt="Nawb" /></a>
 
 <p align="center">
   <a href="#" target="_blank" rel="noopener noreferrer">
