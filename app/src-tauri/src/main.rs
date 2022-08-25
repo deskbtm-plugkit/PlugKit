@@ -3,17 +3,21 @@
   windows_subsystem = "windows"
 )]
 
-use std::path::PathBuf;
 use std::process;
 
 use tauri::api::path::desktop_dir;
-use tauri::{command, AppHandle, ClipboardManager, Manager};
+use tauri::{command, AppHandle, Manager};
 use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem};
-use tauri::{Menu, MenuItem, Submenu};
-use tauri::{SystemTray, WindowBuilder, WindowUrl};
+
+use tauri::SystemTray;
+use webview2_com::Microsoft::Web::WebView2::Win32::{
+  COREWEBVIEW2_PERMISSION_KIND_CLIPBOARD_READ, COREWEBVIEW2_PERMISSION_KIND_GEOLOCATION,
+  COREWEBVIEW2_PERMISSION_KIND_UNKNOWN_PERMISSION, COREWEBVIEW2_PERMISSION_STATE_ALLOW,
+};
+use webview2_com::PermissionRequestedEventHandler;
 use windows::core::PCWSTR;
-use windows::w;
 use windows::Win32::Foundation::{BOOL, HWND, LPARAM, WPARAM};
+use windows::Win32::System::WinRT::EventRegistrationToken;
 use windows::Win32::UI::WindowsAndMessaging::*;
 
 struct DeskbtmWindowManager {}
@@ -45,16 +49,16 @@ static mut deepest_point: HWND = HWND(0);
 
 extern "system" fn enum_window_proc(window: HWND, _: LPARAM) -> BOOL {
   unsafe {
-    let tmp_shell_window = FindWindowExW(window, HWND(0), w!("SHELLDLL_DefView\0"), PCWSTR::null());
+    let tmp_shell_window = FindWindowExW(window, HWND(0), "SHELLDLL_DefView\0", PCWSTR::default());
     let tmp_sys_list_window = FindWindowExW(
       tmp_shell_window,
       HWND(0),
-      w!("SysListView32\0"),
-      PCWSTR::null(),
+      "SysListView32\0",
+      PCWSTR::default(),
     );
 
     if HWND::default() != tmp_shell_window {
-      let tmp_deepest_point = FindWindowExW(HWND(0), window, w!("WorkerW\0"), PCWSTR::null());
+      let tmp_deepest_point = FindWindowExW(HWND(0), window, "WorkerW\0", PCWSTR::default());
       shell_window = tmp_shell_window;
       sys_list_window = tmp_sys_list_window;
       if tmp_deepest_point != HWND::default() {
@@ -68,16 +72,16 @@ extern "system" fn enum_window_proc(window: HWND, _: LPARAM) -> BOOL {
 
 extern "system" fn mouse_proc(window: HWND, _: LPARAM) -> BOOL {
   unsafe {
-    let tmp_shell_window = FindWindowExW(window, HWND(0), w!("SHELLDLL_DefView\0"), PCWSTR::null());
+    let tmp_shell_window = FindWindowExW(window, HWND(0), "SHELLDLL_DefView\0", PCWSTR::default());
     let tmp_sys_list_window = FindWindowExW(
       tmp_shell_window,
       HWND(0),
-      w!("SysListView32\0"),
-      PCWSTR::null(),
+      "SysListView32\0",
+      PCWSTR::default(),
     );
 
     if HWND::default() != tmp_shell_window {
-      let tmp_deepest_point = FindWindowExW(HWND(0), window, w!("WorkerW\0"), PCWSTR::null());
+      let tmp_deepest_point = FindWindowExW(HWND(0), window, "WorkerW\0", PCWSTR::default());
       shell_window = tmp_shell_window;
       sys_list_window = tmp_sys_list_window;
       if tmp_deepest_point != HWND::default() {
@@ -112,13 +116,12 @@ fn my_custom_command(app_handle: AppHandle) -> isize {
   unsafe {
     // CreateWindowExA();
     // let progman_window: HWND = FindWindowExW(HWND(0), HWND(0), w!("Progman\0"), PCWSTR::null());
-    let progman_window: HWND = FindWindowW(w!("Progman\0"), PCWSTR::null());
+    let progman_window: HWND = FindWindowW("Progman\0", PCWSTR::default());
     split_window_workw(progman_window);
 
     enum_window();
 
     let main_window_int = main_window.hwnd().unwrap();
-
     set_deskbtm(HWND(main_window_int.0));
 
     dbg!(deepest_point, shell_window, sys_list_window);
@@ -153,12 +156,31 @@ fn main() {
       #[allow(unused_must_use)]
       {
         main_window.with_webview(|webview| unsafe {
-          webview.controller().SetZoomFactor(4.).unwrap();
+          let mut token = EventRegistrationToken::default();
+
+          webview
+            .controller()
+            .CoreWebView2()
+            .unwrap()
+            .add_PermissionRequested(
+              PermissionRequestedEventHandler::create(Box::new(|_, args| {
+                if let Some(args) = args {
+                  let mut kind = COREWEBVIEW2_PERMISSION_KIND_UNKNOWN_PERMISSION;
+                  args.PermissionKind(&mut kind)?;
+                  dbg!(kind);
+                  if kind == COREWEBVIEW2_PERMISSION_KIND_GEOLOCATION {
+                    args.SetState(COREWEBVIEW2_PERMISSION_STATE_ALLOW)?;
+                  }
+                }
+                Ok(())
+              })),
+              &mut token,
+            );
         });
       }
       // main_window.config();
-      WindowBuilder::new(app, "core", WindowUrl::App("index.html".into()))
-        .on_web_resource_request(|request, response| {});
+      // WindowBuilder::new(app, "core", WindowUrl::App("index.html".into()))
+      //   .on_web_resource_request(|request, response| {});
       Ok(())
     })
     .invoke_handler(tauri::generate_handler![
