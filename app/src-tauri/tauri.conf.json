@@ -4,7 +4,7 @@
     "beforeBuildCommand": "yarn build",
     "beforeDevCommand": "yarn dev",
     "withGlobalTauri": true,
-    "devPath": "http://127.0.0.1:5173/app/src/",
+    "devPath": "http://127.0.0.1:5173",
     "distDir": "../dist"
   },
   "package": {
@@ -20,6 +20,32 @@
         "assetScope": [
           "**"
         ]
+      },
+      "shell": {
+        "all": true,
+        "execute": true,
+        "open": true,
+        "sidecar": true
+      },
+      "clipboard": {
+        "all": false,
+        "readText": true,
+        "writeText": true
+      },
+      "fs": {
+        "all": true,
+        "copyFile": true,
+        "createDir": true,
+        "readDir": true,
+        "readFile": true,
+        "removeDir": true,
+        "removeFile": true,
+        "renameFile": true,
+        "writeFile": true
+      },
+      "http": {
+        "all": false,
+        "request": true
       }
     },
     "systemTray": {
@@ -69,7 +95,7 @@
     "windows": [
       {
         "label": "main",
-        "url": "app/src",
+        "url": "/app/src/",
         "fullscreen": false,
         "height": 600,
         "width": 850,

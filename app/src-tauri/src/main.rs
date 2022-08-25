@@ -3,7 +3,11 @@
   windows_subsystem = "windows"
 )]
 
-use tauri::{command, AppHandle, Manager};
+use std::path::PathBuf;
+use std::process;
+
+use tauri::api::path::desktop_dir;
+use tauri::{command, AppHandle, ClipboardManager, Manager};
 use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem};
 use tauri::{Menu, MenuItem, Submenu};
 use tauri::{SystemTray, WindowBuilder, WindowUrl};
@@ -86,7 +90,23 @@ extern "system" fn mouse_proc(window: HWND, _: LPARAM) -> BOOL {
 }
 
 #[command]
+fn exec_planet(app_handle: AppHandle) {
+  let mut desktop = desktop_dir().unwrap();
+
+  desktop.push("875477924/Planet.exe");
+
+  if let Some(path) = desktop.to_str() {
+    let child = process::Command::new(path).spawn().unwrap();
+    dbg!(child.id());
+  }
+}
+
+#[command]
 fn my_custom_command(app_handle: AppHandle) -> isize {
+  // app_handle.clipboard_manager()
+
+  // app_handle.
+
   let main_window = app_handle.get_window("main").unwrap();
 
   unsafe {
@@ -130,13 +150,22 @@ fn main() {
     .system_tray(tray)
     .setup(|app| {
       let main_window = app.get_window("main").unwrap();
-      main_window.config();
-
+      #[allow(unused_must_use)]
+      {
+        main_window.with_webview(|webview| unsafe {
+          webview.controller().SetZoomFactor(4.).unwrap();
+        });
+      }
+      // main_window.config();
       WindowBuilder::new(app, "core", WindowUrl::App("index.html".into()))
         .on_web_resource_request(|request, response| {});
       Ok(())
     })
-    .invoke_handler(tauri::generate_handler![my_custom_command, plugin_case])
+    .invoke_handler(tauri::generate_handler![
+      my_custom_command,
+      plugin_case,
+      exec_planet
+    ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

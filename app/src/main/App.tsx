@@ -6,8 +6,13 @@ import { appDir, join, homeDir, resolve } from '@tauri-apps/api/path';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { app, invoke } from '@tauri-apps/api';
 import { WebviewWindow } from '@tauri-apps/api/window';
+import { readText } from '@tauri-apps/api/clipboard';
 import './App.css';
 import { Route, BrowserRouter, Routes, useNavigate } from 'react-router-dom';
+import {
+  isPermissionGranted,
+  sendNotification,
+} from '@tauri-apps/api/notification';
 
 const children: React.ReactNode[] = [];
 
@@ -65,19 +70,53 @@ function Page1() {
       </button>
       {/* <iframe src="" frameBorder="0"></iframe> */}
       <button
-        onClick={() => {
-          console.log('=======');
-          const w = new WebviewWindow('Setting', {
-            url: 'http://localhost:5173/setting/index.html',
+        onClick={async () => {
+          const permissionGranted = await isPermissionGranted();
+          console.log(permissionGranted);
+
+          // sendNotification('Tauri is awesome!');
+          sendNotification({
+            title: 'TAURI',
+            body: 'Tauri is awesome!',
+            icon: '/vite.svg',
           });
-          console.log(w);
+          // console.log('=======');
+          // const w = new WebviewWindow('Setting', {
+          //   url: 'http://localhost:5173/setting/index.html',
+          // });
+          // console.log(w);
         }}
       >
         new Window
       </button>
       <button
         onClick={() => {
-          appWindow.hide();
+          // "geolocation" | "notifications" | "persistent-storage" | "push" | "screen-wake-lock" | "xr-spatial-tracking";
+          navigator.permissions.query({ name: 'geolocation' }).then((e) => {
+            console.log(e);
+          });
+          navigator.permissions.query({ name: 'notifications' }).then((e) => {
+            console.log(e);
+          });
+          navigator.permissions
+            .query({ name: 'persistent-storage' })
+            .then((e) => {
+              console.log(e);
+            });
+          navigator.permissions.query({ name: 'push' }).then((e) => {
+            console.log(e);
+          });
+
+          navigator.permissions
+            .query({ name: 'screen-wake-lock' })
+            .then((e) => {
+              console.log(e);
+            });
+
+          navigator.clipboard.read().then((e) => {
+            console.log(e);
+          });
+          // appWindow.hide();
         }}
       >
         Hide
