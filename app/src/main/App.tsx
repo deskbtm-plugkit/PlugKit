@@ -2,11 +2,9 @@
 import { useRef, useState } from 'react';
 import React from 'react';
 import { appWindow } from '@tauri-apps/api/window';
-import { appDir, join, homeDir, resolve } from '@tauri-apps/api/path';
+import { homeDir, resolve } from '@tauri-apps/api/path';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
-import { app, invoke } from '@tauri-apps/api';
-import { WebviewWindow } from '@tauri-apps/api/window';
-import { readText } from '@tauri-apps/api/clipboard';
+import { invoke } from '@tauri-apps/api';
 import './App.css';
 import { Route, BrowserRouter, Routes, useNavigate } from 'react-router-dom';
 import {
@@ -119,6 +117,13 @@ function Page1() {
           // appWindow.hide();
         }}
       >
+        Clipboard
+      </button>
+      <button
+        onClick={() => {
+          appWindow.hide();
+        }}
+      >
         Hide
       </button>
       <button
@@ -184,6 +189,9 @@ function Page1() {
           background: 'pink',
         }}
       ></div>
+      {Array.from({ length: 100 }).map(() => {
+        return <br />;
+      })}
     </div>
   );
 }

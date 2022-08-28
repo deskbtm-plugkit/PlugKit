@@ -35,10 +35,16 @@
   }
 }
 
-.titlebar {}
+.titlebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
 
 .titlebar-button {
-  display: inline-block;
+  float: right;
+  /* display: inline-block; */
 }
 
 .card {

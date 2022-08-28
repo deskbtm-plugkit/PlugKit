@@ -6,7 +6,7 @@
 use std::process;
 
 use tauri::api::path::desktop_dir;
-use tauri::{command, AppHandle, Manager};
+use tauri::{command, plugin, AppHandle, Manager, SystemTrayEvent};
 use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem};
 
 use tauri::SystemTray;
@@ -139,13 +139,18 @@ fn plugin_case(app_handle: AppHandle) -> String {
 
 struct RequestDefender {}
 
+static mut ddd: i32 = 10;
+
 fn main() {
+  let show = CustomMenuItem::new("show".to_string(), "Show");
   let quit = CustomMenuItem::new("quit".to_string(), "Quit");
   let hide = CustomMenuItem::new("hide".to_string(), "Hide");
   let tray_menu = SystemTrayMenu::new()
     .add_item(quit)
     .add_native_item(SystemTrayMenuItem::Separator)
-    .add_item(hide);
+    .add_item(hide)
+    .add_native_item(SystemTrayMenuItem::Separator)
+    .add_item(show);
 
   let tray = SystemTray::new().with_menu(tray_menu);
 
@@ -153,35 +158,56 @@ fn main() {
     .system_tray(tray)
     .setup(|app| {
       let main_window = app.get_window("main").unwrap();
+
       #[allow(unused_must_use)]
       {
         main_window.with_webview(|webview| unsafe {
+          let webview2 = webview.controller().CoreWebView2().unwrap();
           let mut token = EventRegistrationToken::default();
 
-          webview
-            .controller()
-            .CoreWebView2()
-            .unwrap()
-            .add_PermissionRequested(
-              PermissionRequestedEventHandler::create(Box::new(|_, args| {
-                if let Some(args) = args {
-                  let mut kind = COREWEBVIEW2_PERMISSION_KIND_UNKNOWN_PERMISSION;
-                  args.PermissionKind(&mut kind)?;
-                  dbg!(kind);
-                  if kind == COREWEBVIEW2_PERMISSION_KIND_GEOLOCATION {
-                    args.SetState(COREWEBVIEW2_PERMISSION_STATE_ALLOW)?;
-                  }
+          webview2.add_PermissionRequested(
+            PermissionRequestedEventHandler::create(Box::new(|_, args| {
+              if let Some(args) = args {
+                let mut kind = COREWEBVIEW2_PERMISSION_KIND_UNKNOWN_PERMISSION;
+                args.PermissionKind(&mut kind)?;
+                dbg!(kind);
+                if kind == COREWEBVIEW2_PERMISSION_KIND_GEOLOCATION {
+                  args.SetState(COREWEBVIEW2_PERMISSION_STATE_ALLOW)?;
                 }
-                Ok(())
-              })),
-              &mut token,
-            );
+              }
+              Ok(())
+            })),
+            &mut token,
+          );
         });
       }
+
+      dbg!("Hello World");
+
       // main_window.config();
       // WindowBuilder::new(app, "core", WindowUrl::App("index.html".into()))
       //   .on_web_resource_request(|request, response| {});
       Ok(())
+    })
+    .on_system_tray_event(|app, event| match event {
+      SystemTrayEvent::MenuItemClick { id, .. } => {
+        // get a handle to the clicked menu item
+        // note that `tray_handle` can be called anywhere,
+        // just get a `AppHandle` instance with `app.handle()` on the setup hook
+        // and move it to another function or thread
+        let item_handle = app.tray_handle().get_item(&id);
+        match id.as_str() {
+          "show" => {
+            dbg!("=====================");
+            let window = app.get_window("main").unwrap();
+            window.show().unwrap();
+            // you can also `set_selected`, `set_enabled` and `set_native_image` (macOS only).
+            // item_handle.set_title("Show").unwrap();
+          }
+          _ => {}
+        }
+      }
+      _ => {}
     })
     .invoke_handler(tauri::generate_handler![
       my_custom_command,
