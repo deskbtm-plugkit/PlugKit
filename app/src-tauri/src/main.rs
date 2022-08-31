@@ -3,13 +3,18 @@
   windows_subsystem = "windows"
 )]
 
-use std::process;
+mod tray;
 
+use std::time;
+use std::{process, thread};
+
+use crate::tray::create_tray;
 use tauri::api::path::desktop_dir;
-use tauri::{command, plugin, AppHandle, Manager, SystemTrayEvent};
+use tauri::{command, plugin, AppHandle, EventLoopMessage, Manager, SystemTrayEvent};
 use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem};
 
 use tauri::SystemTray;
+use tauri_runtime_wry::{Plugin, PluginBuilder};
 use webview2_com::Microsoft::Web::WebView2::Win32::{
   COREWEBVIEW2_PERMISSION_KIND_CLIPBOARD_READ, COREWEBVIEW2_PERMISSION_KIND_GEOLOCATION,
   COREWEBVIEW2_PERMISSION_KIND_UNKNOWN_PERMISSION, COREWEBVIEW2_PERMISSION_STATE_ALLOW,
@@ -102,6 +107,37 @@ fn exec_planet(app_handle: AppHandle) {
   if let Some(path) = desktop.to_str() {
     let child = process::Command::new(path).spawn().unwrap();
     dbg!(child.id());
+    let ten_millis = time::Duration::from_secs(1);
+    let now = time::Instant::now();
+    thread::sleep(ten_millis);
+
+    let mut hwnds: Vec<HWND> = Vec::new();
+    get_all_window_from_pid(child.id(), &mut hwnds);
+
+    for win in &hwnds {
+      remove_window_edge(*win);
+      dbg!(win, "==========");
+    }
+  }
+}
+
+fn get_all_window_from_pid(pid: u32, hwnds: &mut Vec<HWND>) -> () {
+  unsafe {
+    let mut window = HWND(0);
+    loop {
+      window = FindWindowExW(HWND(0), window, PCWSTR::default(), PCWSTR::default());
+      let mut lpdwpid: u32 = 0;
+
+      GetWindowThreadProcessId(window, &mut lpdwpid);
+
+      if lpdwpid == pid {
+        hwnds.push(window);
+      }
+
+      if window == HWND(0) {
+        break;
+      }
+    }
   }
 }
 
@@ -114,19 +150,14 @@ fn my_custom_command(app_handle: AppHandle) -> isize {
   let main_window = app_handle.get_window("main").unwrap();
 
   unsafe {
-    // CreateWindowExA();
-    // let progman_window: HWND = FindWindowExW(HWND(0), HWND(0), w!("Progman\0"), PCWSTR::null());
     let progman_window: HWND = FindWindowW("Progman\0", PCWSTR::default());
+    let main_window_int = main_window.hwnd().unwrap();
     split_window_workw(progman_window);
-
     enum_window();
 
-    let main_window_int = main_window.hwnd().unwrap();
     set_deskbtm(HWND(main_window_int.0));
 
     dbg!(deepest_point, shell_window, sys_list_window);
-
-    println!("{:?}", progman_window);
   }
 
   main_window.hwnd().unwrap().0
@@ -141,23 +172,40 @@ struct RequestDefender {}
 
 static mut ddd: i32 = 10;
 
-fn main() {
-  let show = CustomMenuItem::new("show".to_string(), "Show");
-  let quit = CustomMenuItem::new("quit".to_string(), "Quit");
-  let hide = CustomMenuItem::new("hide".to_string(), "Hide");
-  let tray_menu = SystemTrayMenu::new()
-    .add_item(quit)
-    .add_native_item(SystemTrayMenuItem::Separator)
-    .add_item(hide)
-    .add_native_item(SystemTrayMenuItem::Separator)
-    .add_item(show);
+struct Demo;
 
-  let tray = SystemTray::new().with_menu(tray_menu);
+// impl PluginBuilder<EventLoopMessage> for Demo {
+// type Plugin = Plugin<EventLoopMessage>;
+// fn build(self, context: tauri_runtime_wry::Context<EventLoopMessage>) -> Self::Plugin {
+//   context.
+// }
+// }
+
+fn remove_window_edge(hwnd: HWND) {
+  unsafe {
+    let win = GetWindowLongW(hwnd, GWL_STYLE) as u32;
+    let (mut style, mut ex_style) = (WINDOW_STYLE(win), WINDOW_EX_STYLE(win));
+
+    style &= !(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
+
+    ex_style &= !(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE | WS_EX_ACCEPTFILES);
+
+    SetWindowLongW(hwnd, GWL_STYLE, style.0 as i32);
+    SetWindowLongW(hwnd, GWL_EXSTYLE, ex_style.0 as i32);
+  }
+}
+
+fn main() {
+  let tray = create_tray();
 
   tauri::Builder::default()
     .system_tray(tray)
     .setup(|app| {
       let main_window = app.get_window("main").unwrap();
+
+      let handle = app.handle();
+
+      // app.wry_plugin();
 
       #[allow(unused_must_use)]
       {

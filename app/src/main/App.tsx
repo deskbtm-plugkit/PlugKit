@@ -121,7 +121,8 @@ function Page1() {
       </button>
       <button
         onClick={() => {
-          appWindow.hide();
+          
+          // appWindow.hide();
         }}
       >
         Hide
@@ -168,6 +169,14 @@ function Page1() {
         }}
       >
         Plugin
+      </button>
+
+      <button
+        onClick={() => {
+          invoke('exec_planet');
+        }}
+      >
+        exec_planet
       </button>
 
       <img src="/vite.svg" />
