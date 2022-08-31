@@ -111,10 +111,9 @@ fn exec_planet(app_handle: AppHandle) {
     let now = time::Instant::now();
     thread::sleep(ten_millis);
 
-    let mut hwnds: Vec<HWND> = Vec::new();
-    get_all_window_from_pid(child.id(), &mut hwnds);
+    let (main_window, handles) = get_all_window_from_pid(child.id());
 
-    for win in &hwnds {
+    for win in &handles {
       remove_window_edge(*win);
       dbg!(win, "==========");
     }
@@ -129,7 +128,10 @@ fn get_main_window_from_pid() {
   // GetWindow(handle, GW_OWNER) == HWND(0) && IsWindowVisible(handle);
 }
 
-fn get_all_window_from_pid(pid: u32, handles: &mut Vec<HWND>) -> () {
+fn get_all_window_from_pid(pid: u32) -> (Option<HWND>, Vec<HWND>) {
+  let mut handles: Vec<HWND> = Vec::new();
+  let mut main_window: Option<HWND> = None;
+
   unsafe {
     let mut window = HWND(0);
     loop {
@@ -137,6 +139,10 @@ fn get_all_window_from_pid(pid: u32, handles: &mut Vec<HWND>) -> () {
       let mut lpdwpid: u32 = 0;
 
       GetWindowThreadProcessId(window, &mut lpdwpid);
+
+      if is_main_window(window) {
+        main_window = Some(window);
+      }
 
       if lpdwpid == pid {
         handles.push(window);
@@ -146,6 +152,8 @@ fn get_all_window_from_pid(pid: u32, handles: &mut Vec<HWND>) -> () {
         break;
       }
     }
+
+    (main_window, handles)
   }
 }
 
