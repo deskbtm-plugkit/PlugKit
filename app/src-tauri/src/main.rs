@@ -121,7 +121,15 @@ fn exec_planet(app_handle: AppHandle) {
   }
 }
 
-fn get_all_window_from_pid(pid: u32, hwnds: &mut Vec<HWND>) -> () {
+fn is_main_window(handle: HWND) -> bool {
+  unsafe { GetWindow(handle, GW_OWNER) == HWND(0) && IsWindowVisible(handle).as_bool() }
+}
+
+fn get_main_window_from_pid() {
+  // GetWindow(handle, GW_OWNER) == HWND(0) && IsWindowVisible(handle);
+}
+
+fn get_all_window_from_pid(pid: u32, handles: &mut Vec<HWND>) -> () {
   unsafe {
     let mut window = HWND(0);
     loop {
@@ -131,7 +139,7 @@ fn get_all_window_from_pid(pid: u32, hwnds: &mut Vec<HWND>) -> () {
       GetWindowThreadProcessId(window, &mut lpdwpid);
 
       if lpdwpid == pid {
-        hwnds.push(window);
+        handles.push(window);
       }
 
       if window == HWND(0) {
@@ -151,11 +159,11 @@ fn my_custom_command(app_handle: AppHandle) -> isize {
 
   unsafe {
     let progman_window: HWND = FindWindowW("Progman\0", PCWSTR::default());
-    let main_window_int = main_window.hwnd().unwrap();
+    let main_window_hwnd = main_window.hwnd().unwrap();
     split_window_workw(progman_window);
     enum_window();
 
-    set_deskbtm(HWND(main_window_int.0));
+    set_deskbtm(HWND(main_window_hwnd.0));
 
     dbg!(deepest_point, shell_window, sys_list_window);
   }
@@ -181,17 +189,17 @@ struct Demo;
 // }
 // }
 
-fn remove_window_edge(hwnd: HWND) {
+fn remove_window_edge(handle: HWND) {
   unsafe {
-    let win = GetWindowLongW(hwnd, GWL_STYLE) as u32;
+    let win = GetWindowLongW(handle, GWL_STYLE) as u32;
     let (mut style, mut ex_style) = (WINDOW_STYLE(win), WINDOW_EX_STYLE(win));
 
     style &= !(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
 
     ex_style &= !(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE | WS_EX_ACCEPTFILES);
 
-    SetWindowLongW(hwnd, GWL_STYLE, style.0 as i32);
-    SetWindowLongW(hwnd, GWL_EXSTYLE, ex_style.0 as i32);
+    SetWindowLongW(handle, GWL_STYLE, style.0 as i32);
+    SetWindowLongW(handle, GWL_EXSTYLE, ex_style.0 as i32);
   }
 }
 
