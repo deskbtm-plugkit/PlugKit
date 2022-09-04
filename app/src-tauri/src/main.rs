@@ -9,7 +9,8 @@ use std::time;
 use std::{process, thread};
 
 use crate::tray::create_tray;
-use tauri::api::path::desktop_dir;
+use tauri::api::path::{app_dir, desktop_dir, resolve_path};
+use tauri::utils::Error;
 use tauri::{command, plugin, AppHandle, EventLoopMessage, Manager, SystemTrayEvent};
 use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem};
 
@@ -22,10 +23,21 @@ use webview2_com::Microsoft::Web::WebView2::Win32::{
 use webview2_com::PermissionRequestedEventHandler;
 use windows::core::PCWSTR;
 use windows::Win32::Foundation::{BOOL, HWND, LPARAM, WPARAM};
+use windows::Win32::System::Com::{CoCreateInstance, CLSCTX_ALL};
 use windows::Win32::System::WinRT::EventRegistrationToken;
+use windows::Win32::UI::Shell::{DesktopWallpaper, IDesktopWallpaper};
 use windows::Win32::UI::WindowsAndMessaging::*;
 
-struct DeskbtmWindowManager {}
+struct DeskbtmWindowManager {
+  target: HWND,
+}
+
+#[derive(Debug, Clone)]
+pub struct PrepareWindowsPlatform {
+  shell_window: HWND,
+  def_view: HWND,
+  folder_view: HWND,
+}
 
 fn split_window_workw(hwnd: HWND) {
   unsafe {
@@ -98,6 +110,15 @@ extern "system" fn mouse_proc(window: HWND, _: LPARAM) -> BOOL {
   }
 }
 
+fn set_sys_wallpaper() -> ::windows::core::Result<()> {
+  let wallpaper: IDesktopWallpaper;
+  unsafe {
+    wallpaper = CoCreateInstance(&DesktopWallpaper, None, CLSCTX_ALL)?;
+  };
+
+  Ok(())
+}
+
 #[command]
 fn exec_planet(app_handle: AppHandle) {
   let mut desktop = desktop_dir().unwrap();
@@ -107,21 +128,61 @@ fn exec_planet(app_handle: AppHandle) {
   if let Some(path) = desktop.to_str() {
     let child = process::Command::new(path).spawn().unwrap();
     dbg!(child.id());
-    let ten_millis = time::Duration::from_secs(1);
+    let ten_millis = time::Duration::from_secs(2);
     let now = time::Instant::now();
     thread::sleep(ten_millis);
 
-    let (main_window, handles) = get_all_window_from_pid(child.id());
+    let (target_main_window, handles) = get_all_window_from_pid(child.id());
 
-    for win in &handles {
-      remove_window_edge(*win);
-      dbg!(win, "==========");
+    dbg!(&target_main_window, &handles);
+
+    unsafe {
+      let progman_window: HWND = FindWindowW("Progman\0", PCWSTR::default());
+
+      if let Some(target_main_window) = target_main_window {
+        thread::sleep(time::Duration::from_secs(3));
+        dbg!(IsWindowVisible(target_main_window).as_bool());
+        remove_window_edge(target_main_window);
+
+        maximize(target_main_window);
+
+        split_window_workw(progman_window);
+        enum_window();
+
+        set_deskbtm(target_main_window);
+      }
     }
+    // for win in &handles {
+    //   remove_window_edge(*win);
+    //   dbg!(win, "==========");
+    // }
   }
 }
 
 fn is_main_window(handle: HWND) -> bool {
-  unsafe { GetWindow(handle, GW_OWNER) == HWND(0) && IsWindowVisible(handle).as_bool() }
+  unsafe { GetWindow(handle, GW_OWNER) == HWND(0) }
+}
+
+fn maximize(window: HWND) {
+  let flags = SWP_NOZORDER | SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED;
+
+  unsafe {
+    SetWindowPos(
+      window,
+      HWND::default(),
+      0,
+      0,
+      GetSystemMetrics(SM_CXSCREEN),
+      GetSystemMetrics(SM_CXSCREEN),
+      flags,
+    );
+    SendMessageW(
+      window,
+      WM_SYSCOMMAND,
+      WPARAM(SC_MAXIMIZE as usize),
+      LPARAM(0),
+    );
+  }
 }
 
 fn get_main_window_from_pid() {
@@ -131,21 +192,21 @@ fn get_main_window_from_pid() {
 fn get_all_window_from_pid(pid: u32) -> (Option<HWND>, Vec<HWND>) {
   let mut handles: Vec<HWND> = Vec::new();
   let mut main_window: Option<HWND> = None;
+  let mut window = HWND(0);
+  let mut t_pid: u32 = 0;
 
   unsafe {
-    let mut window = HWND(0);
     loop {
       window = FindWindowExW(HWND(0), window, PCWSTR::default(), PCWSTR::default());
-      let mut lpdwpid: u32 = 0;
 
-      GetWindowThreadProcessId(window, &mut lpdwpid);
+      GetWindowThreadProcessId(window, &mut t_pid);
 
-      if is_main_window(window) {
-        main_window = Some(window);
-      }
-
-      if lpdwpid == pid {
+      if t_pid == pid {
         handles.push(window);
+
+        if is_main_window(window) {
+          main_window = Some(window);
+        }
       }
 
       if window == HWND(0) {
@@ -199,15 +260,16 @@ struct Demo;
 
 fn remove_window_edge(handle: HWND) {
   unsafe {
+    dbg!(handle);
     let win = GetWindowLongW(handle, GWL_STYLE) as u32;
     let (mut style, mut ex_style) = (WINDOW_STYLE(win), WINDOW_EX_STYLE(win));
 
     style &= !(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
 
-    ex_style &= !(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE | WS_EX_ACCEPTFILES);
+    // ex_style &= !(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE | WS_EX_ACCEPTFILES);
 
     SetWindowLongW(handle, GWL_STYLE, style.0 as i32);
-    SetWindowLongW(handle, GWL_EXSTYLE, ex_style.0 as i32);
+    // SetWindowLongW(handle, GWL_EXSTYLE, ex_style.0 as i32);
   }
 }
 
