@@ -1,11 +1,10 @@
 [package]
-name = "app"
-version = "0.1.0"
-description = "A Tauri App"
+name = "abyss-app"
+version = "0.0.1"
+description = "A desktop extension"
 authors = ["you"]
-license = ""
-repository = ""
-default-run = "app"
+repository = "https://github.com/deskbtm-abyss/abyss"
+default-run = "abyss-app"
 edition = "2021"
 rust-version = "1.57"
 
@@ -24,6 +23,9 @@ tauri = { version = "1.0.5", features = [
   "wry",
 ] }
 tauri-runtime-wry = { version = "0.10.2" }
+abyss-core = { path = "../../core", version = "~0.0.1" }
+abyss-addon-log = { version = "0.0.1", path = "../../addons/log" }
+
 
 [target."cfg(target_os = \"windows\")".dependencies.windows]
 version = "0.37"

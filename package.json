@@ -20,7 +20,8 @@
     "app",
     "packages/*",
     "built-in/*",
-    "core"
+    "core",
+    "addons/*"
   ],
   "engines": {
     "node": ">= 16.0.0",

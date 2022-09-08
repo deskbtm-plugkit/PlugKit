@@ -121,7 +121,6 @@ function Page1() {
       </button>
       <button
         onClick={() => {
-          
           // appWindow.hide();
         }}
       >
@@ -169,6 +168,14 @@ function Page1() {
         }}
       >
         Plugin
+      </button>
+
+      <button
+        onClick={async () => {
+          const r = await invoke('cmd1');
+        }}
+      >
+        cmd1
       </button>
 
       <button

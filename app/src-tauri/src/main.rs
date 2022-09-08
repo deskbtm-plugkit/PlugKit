@@ -9,6 +9,7 @@ use std::time;
 use std::{process, thread};
 
 use crate::tray::create_tray;
+use abyss_core::windows::PreparedDeskbtm;
 use tauri::api::path::{app_dir, desktop_dir, resolve_path};
 use tauri::utils::Error;
 use tauri::{command, plugin, AppHandle, EventLoopMessage, Manager, SystemTrayEvent};
@@ -219,6 +220,11 @@ fn get_all_window_from_pid(pid: u32) -> (Option<HWND>, Vec<HWND>) {
 }
 
 #[command]
+fn cmd1() {
+  let prepared_deskbtm = PreparedDeskbtm::new();
+}
+
+#[command]
 fn my_custom_command(app_handle: AppHandle) -> isize {
   // app_handle.clipboard_manager()
 
@@ -260,7 +266,6 @@ struct Demo;
 
 fn remove_window_edge(handle: HWND) {
   unsafe {
-    dbg!(handle);
     let win = GetWindowLongW(handle, GWL_STYLE) as u32;
     let (mut style, mut ex_style) = (WINDOW_STYLE(win), WINDOW_EX_STYLE(win));
 
@@ -338,7 +343,8 @@ fn main() {
     .invoke_handler(tauri::generate_handler![
       my_custom_command,
       plugin_case,
-      exec_planet
+      exec_planet,
+      cmd1
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

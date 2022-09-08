@@ -1,5 +1,5 @@
 {
-  "name": "@abyss-builtin/sdk",
+  "name": "abyss-sdk",
   "version": "1.0.0",
   "main": "",
   "scripts": {
@@ -10,8 +10,8 @@
   "description": "",
   "abyss": {
     "targetVersion": ">=1.2.9 <2.0.0",
-    "packageName": "com.demo.fuck",
-    "description": "百年漫画 多多喵插件实例",
+    "packageName": "com.deskbtm.abyss.demo",
+    "description": "wallpaper application example",
     // 插件详情描述
     "funcDescription": [
       "1. xxxx",
