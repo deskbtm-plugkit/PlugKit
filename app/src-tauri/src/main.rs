@@ -9,7 +9,10 @@ use std::time;
 use std::{process, thread};
 
 use crate::tray::create_tray;
+use abyss_addon_log::fern::colors::{Color, ColoredLevelConfig};
+use abyss_addon_log::{LogTarget, LoggerBuilder, RotationStrategy};
 use abyss_core::windows::PreparedDeskbtm;
+use log::info;
 use tauri::api::path::{app_dir, desktop_dir, resolve_path};
 use tauri::utils::Error;
 use tauri::{command, plugin, AppHandle, EventLoopMessage, Manager, SystemTrayEvent};
@@ -221,7 +224,11 @@ fn get_all_window_from_pid(pid: u32) -> (Option<HWND>, Vec<HWND>) {
 
 #[command]
 fn cmd1() {
-  let prepared_deskbtm = PreparedDeskbtm::new();
+  info!(target: "native", "Connected to port at Mb/s");
+  // Log::info(&"demo");
+  // Log::error(&1);
+
+  // let prepared_deskbtm = PreparedDeskbtm::new();
 }
 
 #[command]
@@ -280,9 +287,23 @@ fn remove_window_edge(handle: HWND) {
 
 fn main() {
   let tray = create_tray();
+  let colors = ColoredLevelConfig::new()
+    .info(Color::Green)
+    .debug(Color::Magenta);
+  let mut logger_option = LoggerBuilder::default()
+    .targets([LogTarget::LogDir, LogTarget::Stdout])
+    .with_colors(colors)
+    .rotation_strategy(RotationStrategy::KeepAll);
+
+  if cfg!(debug_assertions) {
+    logger_option = logger_option.with_colors(colors);
+  }
+
+  let logger_plugin = logger_option.build();
 
   tauri::Builder::default()
     .system_tray(tray)
+    .plugin(logger_plugin)
     .setup(|app| {
       let main_window = app.get_window("main").unwrap();
 

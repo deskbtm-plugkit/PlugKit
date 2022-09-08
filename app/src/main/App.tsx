@@ -11,6 +11,7 @@ import {
   isPermissionGranted,
   sendNotification,
 } from '@tauri-apps/api/notification';
+import { info } from '@abyss-addon/log';
 
 const children: React.ReactNode[] = [];
 
@@ -173,6 +174,7 @@ function Page1() {
       <button
         onClick={async () => {
           const r = await invoke('cmd1');
+          info('demodmeodmoemoede');
         }}
       >
         cmd1

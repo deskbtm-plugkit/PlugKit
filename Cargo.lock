@@ -28,6 +28,7 @@ version = "0.0.1"
 dependencies = [
  "abyss-addon-log",
  "abyss-core",
+ "log",
  "serde",
  "serde_json",
  "tauri",
@@ -41,6 +42,7 @@ dependencies = [
 name = "abyss-core"
 version = "0.0.1"
 dependencies = [
+ "log",
  "once_cell",
  "webview2-com",
  "windows 0.37.0",
