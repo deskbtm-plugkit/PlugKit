@@ -224,7 +224,9 @@ fn get_all_window_from_pid(pid: u32) -> (Option<HWND>, Vec<HWND>) {
 
 #[command]
 fn cmd1() {
-  info!(target: "native", "Connected to port at Mb/s");
+  let instance = PreparedDeskbtm::new();
+  
+  dbg!(instance.deskbtm_view);
   // Log::info(&"demo");
   // Log::error(&1);
 
@@ -286,6 +288,8 @@ fn remove_window_edge(handle: HWND) {
 }
 
 fn main() {
+  // prepared_deskbtm
+
   let tray = create_tray();
   let colors = ColoredLevelConfig::new()
     .info(Color::Green)

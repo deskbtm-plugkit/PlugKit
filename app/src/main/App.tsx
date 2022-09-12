@@ -174,7 +174,6 @@ function Page1() {
       <button
         onClick={async () => {
           const r = await invoke('cmd1');
-          info('demodmeodmoemoede');
         }}
       >
         cmd1
