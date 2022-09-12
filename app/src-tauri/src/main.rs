@@ -11,7 +11,7 @@ use std::{process, thread};
 use crate::tray::create_tray;
 use abyss_addon_log::fern::colors::{Color, ColoredLevelConfig};
 use abyss_addon_log::{LogTarget, LoggerBuilder, RotationStrategy};
-use abyss_core::windows::PreparedDeskbtm;
+use abyss_core::windows::{prepared_deskbtm, PreparedDeskbtm};
 use log::info;
 use tauri::api::path::{app_dir, desktop_dir, resolve_path};
 use tauri::utils::Error;
@@ -224,8 +224,8 @@ fn get_all_window_from_pid(pid: u32) -> (Option<HWND>, Vec<HWND>) {
 
 #[command]
 fn cmd1() {
-  let instance = PreparedDeskbtm::new();
-  
+  let instance = prepared_deskbtm();
+
   dbg!(instance.deskbtm_view);
   // Log::info(&"demo");
   // Log::error(&1);
