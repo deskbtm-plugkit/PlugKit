@@ -1,7 +1,7 @@
 // import { invoke } from '@tauri-apps/api/tauri';
 import { useRef, useState } from 'react';
 import React from 'react';
-import { appWindow } from '@tauri-apps/api/window';
+import { appWindow, WebviewWindow } from '@tauri-apps/api/window';
 import { homeDir, resolve } from '@tauri-apps/api/path';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { invoke } from '@tauri-apps/api';
@@ -12,8 +12,15 @@ import {
   sendNotification,
 } from '@tauri-apps/api/notification';
 import { info } from '@abyss-addon/log';
+import { listen } from '@tauri-apps/api/event';
 
 const children: React.ReactNode[] = [];
+
+const unlisten = listen('demo1', (event) => {
+  console.log('============================', event);
+  // event.event is the event name (useful if you want to use a single callback fn for multiple event types)
+  // event.payload is the payload object
+});
 
 appWindow.listen<string>('state-changed', (event) => {
   console.log(`Got error: `, event);
@@ -33,7 +40,7 @@ function Page1() {
 
   return (
     <div className="App">
-      <div data-tauri-drag-region className="titlebar">
+      {/* <div data-tauri-drag-region className="titlebar">
         <div className="titlebar-button" id="titlebar-minimize">
           <img
             src="https://api.iconify.design/mdi:window-minimize.svg"
@@ -49,7 +56,7 @@ function Page1() {
         <div className="titlebar-button" id="titlebar-close">
           <img src="https://api.iconify.design/mdi:close.svg" alt="close" />
         </div>
-      </div>
+      </div> */}
       {/* <button
         onClick={async () => {
           const r = await invoke('my_custom_command');
@@ -74,16 +81,17 @@ function Page1() {
           console.log(permissionGranted);
 
           // sendNotification('Tauri is awesome!');
-          sendNotification({
-            title: 'TAURI',
-            body: 'Tauri is awesome!',
-            icon: '/vite.svg',
-          });
-          // console.log('=======');
-          // const w = new WebviewWindow('Setting', {
-          //   url: 'http://localhost:5173/setting/index.html',
+          // sendNotification({
+          //   title: 'TAURI',
+          //   body: 'Tauri is awesome!',
+          //   icon: '/vite.svg',
           // });
-          // console.log(w);
+          // console.log('=======');
+          const w = new WebviewWindow('Setting', {
+            url: '/app/src/setting/index.html',
+          });
+
+          // await invoke('create_demo_window');
         }}
       >
         new Window
@@ -120,23 +128,12 @@ function Page1() {
       >
         Clipboard
       </button>
-      <button
-        onClick={() => {
-          // appWindow.hide();
-        }}
-      >
-        Hide
-      </button>
+      <button onClick={() => {}}>Hide</button>
       <button
         onClick={async () => {
           // import('http://osd.deskbtm.com/case.js' as any).then((e) => {
           //   console.log(e);
           // });
-
-          await appWindow.emit('state-changed', {
-            loggedIn: true,
-            token: 'authToken',
-          });
 
           // const webview = new WebviewWindow('theUniqueLabel', {
           //   url: 'http://osd.deskbtm.com/case.html',
@@ -147,20 +144,19 @@ function Page1() {
             home,
             'AbyssProject/abyss/app/public/case.html',
           );
-          console.log(a);
 
           const htmlUri = convertFileSrc(a);
 
           setUrl(htmlUri);
           console.log(htmlUri);
-          await appWindow.setFullscreen(true);
+          // await appWindow.setFullscreen(true);
           // await appWindow.maximize();
 
           // await appWindow.setSize()
 
-          setTimeout(async () => {
-            const r = await invoke('my_custom_command');
-          }, 4000);
+          // setTimeout(async () => {
+          //   const r = await invoke('my_custom_command');
+          // }, 4000);
 
           // console.log(ref.current);
           // ref.current!.innerHTML =
@@ -189,14 +185,16 @@ function Page1() {
 
       <img src="/vite.svg" />
 
-      <iframe
-        id="inlineFrameExample"
-        title="Inline Frame Example"
-        width="300"
-        height="200"
-        style={{ border: 'none' }}
-        src={url!}
-      ></iframe>
+      {url && (
+        <iframe
+          id="inlineFrameExample"
+          title="Inline Frame Example"
+          width="300"
+          height="200"
+          style={{ border: 'none' }}
+          src={url!}
+        ></iframe>
+      )}
 
       <div
         className="box"
@@ -206,8 +204,8 @@ function Page1() {
           background: 'pink',
         }}
       ></div>
-      {Array.from({ length: 100 }).map(() => {
-        return <br />;
+      {Array.from({ length: 100 }).map((v, i) => {
+        return <br key={i} />;
       })}
     </div>
   );
@@ -218,7 +216,6 @@ function Page2() {
 }
 
 function App() {
-  console.log('------------------');
   return (
     <BrowserRouter basename="/app/src">
       <Routes>

@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  // To include built-in apps
   root: resolve(__dirname, '../'),
   publicDir: resolve(__dirname, 'public'),
   envDir: __dirname,
@@ -15,7 +16,7 @@ export default defineConfig({
       input: {
         index: resolve(__dirname, 'src/index.html'),
         setting: resolve(__dirname, 'src/setting/index.html'),
-        'ext-wallpaper': resolve(
+        'builtin-wallpaper': resolve(
           __dirname,
           '../built-in/wallpaper/src/index.html',
         ),

@@ -6,3 +6,7 @@
     <h1 align="center">Abyss</h1>
   </a>
 </p>
+
+
+
+Abyss is a source available software.
