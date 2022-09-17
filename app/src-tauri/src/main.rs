@@ -91,11 +91,11 @@ fn main() {
       #[allow(unused_must_use)]
       {
         main_window.with_webview(|webview| unsafe {
-          let webview2 = webview.controller().CoreWebView2().unwrap();
+          let webview = webview.controller().CoreWebView2().unwrap();
           let mut token = EventRegistrationToken::default();
 
-          webview2.add_PermissionRequested(
-            PermissionRequestedEventHandler::create(Box::new(|_, args| {
+          webview.add_PermissionRequested(
+            &PermissionRequestedEventHandler::create(Box::new(|_, args| {
               if let Some(args) = args {
                 let mut kind = COREWEBVIEW2_PERMISSION_KIND_UNKNOWN_PERMISSION;
                 args.PermissionKind(&mut kind)?;
