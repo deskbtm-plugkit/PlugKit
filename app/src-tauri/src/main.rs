@@ -5,49 +5,29 @@
 
 mod tray;
 
-use std::time;
-use std::{process, thread};
-
 use crate::tray::create_tray;
 use abyss_addon_log::fern::colors::{Color, ColoredLevelConfig};
 use abyss_addon_log::{LogTarget, LoggerBuilder, RotationStrategy};
-use abyss_core::windows::{prepared_deskbtm, PreparedDeskbtm};
-use log::info;
-use tauri::api::path::{app_dir, desktop_dir, resolve_path};
-use tauri::utils::Error;
-use tauri::{
-  command, plugin, AppHandle, EventLoopMessage, Manager, SystemTrayEvent, WindowBuilder,
-};
+use abyss_core::windows::prepared_deskbtm;
 
-use tauri::SystemTray;
-use tauri_runtime_wry::{Plugin, PluginBuilder};
-use webview2_com::Microsoft::Web::WebView2::Win32::{
-  COREWEBVIEW2_PERMISSION_KIND_CLIPBOARD_READ, COREWEBVIEW2_PERMISSION_KIND_GEOLOCATION,
-  COREWEBVIEW2_PERMISSION_KIND_UNKNOWN_PERMISSION, COREWEBVIEW2_PERMISSION_STATE_ALLOW,
-};
+use tauri::{command, AppHandle, Manager, SystemTrayEvent};
+
+use tauri_runtime_wry::PluginBuilder;
+use webview2_com::Microsoft::Web::WebView2::Win32::*;
 use webview2_com::PermissionRequestedEventHandler;
-use windows::core::PCWSTR;
-use windows::Win32::Foundation::{BOOL, HWND, LPARAM, WPARAM};
-use windows::Win32::System::Com::{CoCreateInstance, CLSCTX_ALL};
+
 use windows::Win32::System::WinRT::EventRegistrationToken;
-use windows::Win32::UI::Shell::{DesktopWallpaper, IDesktopWallpaper};
-use windows::Win32::UI::WindowsAndMessaging::*;
 
 #[command]
 fn cmd1() {
-  let instance = prepared_deskbtm();
-
-  // Log::info(&"demo");
-  // Log::error(&1);
-
-  // let prepared_deskbtm = PreparedDeskbtm::new();
+  let _instance = prepared_deskbtm();
 }
 
 struct RequestDefender {}
 
 #[command]
 async fn create_demo_window(app: AppHandle) {
-  let window = tauri::WindowBuilder::new(
+  let _window = tauri::WindowBuilder::new(
     &app,
     "label",
     tauri::WindowUrl::App("app/src/setting/index.html".into()),
@@ -80,13 +60,9 @@ fn main() {
     .setup(|app| {
       let main_window = app.get_window("main").unwrap();
 
-      // main_window.
+      let _handle = app.handle();
 
-      let handle = app.handle();
-
-      // main_window.
-
-      // app.wry_plugin();
+      app.listen_global("invoke-demo", |_event| {});
 
       #[allow(unused_must_use)]
       {
@@ -118,7 +94,7 @@ fn main() {
     })
     .on_system_tray_event(|app, event| match event {
       SystemTrayEvent::MenuItemClick { id, .. } => {
-        let item_handle = app.tray_handle().get_item(&id);
+        let _item_handle = app.tray_handle().get_item(&id);
         match id.as_str() {
           "show" => {
             dbg!("=====================");

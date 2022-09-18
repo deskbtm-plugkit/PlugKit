@@ -1,18 +1,14 @@
 // import { invoke } from '@tauri-apps/api/tauri';
-import { useRef, useState } from 'react';
+import './App.css';
 import React from 'react';
+import { invoke } from '@tauri-apps/api';
+import { useRef, useState } from 'react';
+import { listen } from '@tauri-apps/api/event';
 import { appWindow, WebviewWindow } from '@tauri-apps/api/window';
 import { homeDir, resolve } from '@tauri-apps/api/path';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
-import { invoke } from '@tauri-apps/api';
-import './App.css';
 import { Route, BrowserRouter, Routes, useNavigate } from 'react-router-dom';
-import {
-  isPermissionGranted,
-  sendNotification,
-} from '@tauri-apps/api/notification';
-import { info } from '@abyss-addon/log';
-import { listen } from '@tauri-apps/api/event';
+import { isPermissionGranted } from '@tauri-apps/api/notification';
 
 const children: React.ReactNode[] = [];
 
@@ -87,8 +83,8 @@ function Page1() {
           //   icon: '/vite.svg',
           // });
           // console.log('=======');
-          const w = new WebviewWindow('Setting', {
-            url: '/app/src/setting/index.html',
+          const w = new WebviewWindow('Wallpaper', {
+            url: '/built-in/wallpaper/src/index.html',
           });
 
           // await invoke('create_demo_window');

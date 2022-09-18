@@ -20,6 +20,10 @@ export default defineConfig({
           __dirname,
           '../built-in/wallpaper/src/index.html',
         ),
+        'builtin-live2d': resolve(
+          __dirname,
+          '../built-in/live2d/src/index.html',
+        ),
       },
     },
   },
