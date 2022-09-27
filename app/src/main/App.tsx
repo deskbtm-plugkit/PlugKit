@@ -165,10 +165,24 @@ function Page1() {
 
       <button
         onClick={async () => {
-          const r = await invoke('cmd1');
+          const r = await invoke('cmd2');
         }}
       >
         cmd1
+      </button>
+      <button
+        onClick={async () => {
+          const r = await invoke('cmd3');
+        }}
+      >
+        cmd3
+      </button>
+      <button
+        onClick={async () => {
+          const r = await invoke('cmd4');
+        }}
+      >
+        cmd4
       </button>
 
       <button

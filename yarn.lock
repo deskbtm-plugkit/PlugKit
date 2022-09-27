@@ -881,6 +881,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"abyss-sdk@workspace:packages/sdk":
+  version: 0.0.0-use.local
+  resolution: "abyss-sdk@workspace:packages/sdk"
+  languageName: unknown
+  linkType: soft
+
 "abyss@workspace:.":
   version: 0.0.0-use.local
   resolution: "abyss@workspace:."

@@ -35,9 +35,6 @@ features = [
   "Win32_UI",
 ]
 
-[target."cfg(windows)".dependencies]
-webview2-com = "0.19.1"
-
 
 [features]
 # by default Tauri runs in production mode

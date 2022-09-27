@@ -9,6 +9,10 @@
   "license": "Apache-2.0",
   "description": "",
   "abyss": {
+    "config": {
+      // 窗口类型 native, web
+      "windowType": ""
+    },
     "targetVersion": ">=1.2.9 <2.0.0",
     "packageName": "com.deskbtm.abyss.demo",
     "description": "wallpaper application example",
