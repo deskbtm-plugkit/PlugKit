@@ -249,7 +249,9 @@ fn main() {
     ) -> LRESULT {
       println!("{} {:?} {:?}", code, wparam, lparam);
 
-      match wparam.0 as u32 {
+      let WPARAM(msg) = wparam;
+
+      match msg as u32 {
         WM_RBUTTONUP => {
           dbg!("====================");
         }
