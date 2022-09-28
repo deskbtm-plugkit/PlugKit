@@ -16,10 +16,9 @@ use abyss_core::webview2_com::PermissionRequestedEventHandler;
 use abyss_core::windows::prepared_deskbtm;
 use tauri::{command, AppHandle, Manager, SystemTrayEvent};
 
-use tauri_runtime_wry::PluginBuilder;
-
 use windows::Win32::Foundation::*;
 use windows::Win32::Graphics::Gdi::UpdateWindow;
+use windows::Win32::System::LibraryLoader::GetModuleHandleW;
 use windows::Win32::System::WinRT::EventRegistrationToken;
 use windows::Win32::UI::Shell::SetWindowSubclass;
 use windows::Win32::UI::WindowsAndMessaging::{
@@ -53,7 +52,7 @@ fn cmd2() {
     dbg!("===========");
     // let r = SendMessageW(deskbtm.view, WM_CLOSE, WPARAM(0), LPARAM(0));
     // CloseWindow(deskbtm.view);
-    DestroyWindow(deskbtm.view);
+    // DestroyWindow(deskbtm.view);
     // UpdateWindow(b);;
     // UpdateWindow(a);
     // dbg!(r);
@@ -235,6 +234,34 @@ fn main() {
     ])
     .build(tauri::generate_context!())
     .expect("error while running tauri application");
+  unsafe {
+    let hook = SetWindowsHookExW(
+      WH_MOUSE_LL,
+      Some(enum_window_proc),
+      GetModuleHandleW(PCWSTR::null()).ok(),
+      0,
+    );
+
+    unsafe extern "system" fn enum_window_proc(
+      code: i32,
+      wparam: WPARAM,
+      lparam: LPARAM,
+    ) -> LRESULT {
+      println!("{} {:?} {:?}", code, wparam, lparam);
+
+      match wparam.0 as u32 {
+        WM_RBUTTONUP => {
+          dbg!("====================");
+        }
+        WM_LBUTTONDOWN => {
+          dbg!("=============左边");
+        }
+        _ => (),
+      }
+
+      CallNextHookEx(HHOOK(0), code, wparam, lparam)
+    }
+  }
 
   builder.run(move |_app_handle, _e| {})
 }
