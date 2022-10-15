@@ -168,14 +168,14 @@ function Page1() {
           const r = await invoke('cmd2');
         }}
       >
-        cmd1
+        cmd2
       </button>
       <button
         onClick={async () => {
           const r = await invoke('cmd3');
         }}
       >
-        cmd3
+        embedded main
       </button>
       <button
         onClick={async () => {
@@ -191,6 +191,22 @@ function Page1() {
         }}
       >
         exec_planet
+      </button>
+
+      <button
+        onClick={() => {
+          invoke('create_demo_window');
+        }}
+      >
+        create setting
+      </button>
+      <button
+        onClick={() => {
+          console.log('-----------------');
+          invoke('cmd6');
+        }}
+      >
+        embedded setting
       </button>
 
       <img src="/vite.svg" />

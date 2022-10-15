@@ -35,7 +35,7 @@ use windows::{
 
 #[command]
 fn cmd1() {
-  let instance = prepared_deskbtm();
+  let instance = prepared_deskbtm().lock().unwrap();
   dbg!(instance);
 }
 
@@ -45,17 +45,17 @@ struct LauncherWindow {}
 #[command]
 fn cmd2() {
   unsafe {
-    let deskbtm = prepared_deskbtm();
+    let deskbtm = &prepared_deskbtm().lock().unwrap();
     let a = GetDesktopWindow();
     let b = FindWindowW(w!("Progman\0"), PCWSTR::null());
     dbg!(deskbtm);
-    dbg!("===========");
-    // let r = SendMessageW(deskbtm.view, WM_CLOSE, WPARAM(0), LPARAM(0));
-    // CloseWindow(deskbtm.view);
-    // DestroyWindow(deskbtm.view);
-    // UpdateWindow(b);;
-    // UpdateWindow(a);
-    // dbg!(r);
+
+    deskbtm.clear();
+    dbg!(deskbtm);
+
+    let deskbtm1 = prepared_deskbtm().lock().unwrap();
+
+    dbg!(deskbtm1);
   }
   // let handle = thread::spawn(move || {
   //   dbg!("======================================");
@@ -82,10 +82,18 @@ fn cmd2() {
 }
 
 #[command]
+fn cmd6(app: AppHandle) {
+  let main_window = app.get_window("label").unwrap();
+  let deskbtm = prepared_deskbtm().lock().unwrap();
+  unsafe {
+    SetParent(main_window.hwnd().ok(), deskbtm.view);
+  }
+}
+
+#[command]
 fn cmd3(app: AppHandle) {
   let main_window = app.get_window("main").unwrap();
-  let deskbtm = prepared_deskbtm();
-  dbg!(deskbtm);
+  let deskbtm = prepared_deskbtm().lock().unwrap();
   unsafe {
     SetParent(main_window.hwnd().ok(), deskbtm.view);
   }
@@ -94,7 +102,7 @@ fn cmd3(app: AppHandle) {
 #[command]
 fn cmd4(app: AppHandle) {
   let main_window = app.get_window("main").unwrap();
-  let deskbtm = prepared_deskbtm();
+  let deskbtm = prepared_deskbtm().lock().unwrap();
   unsafe {
     SetParent(deskbtm.view, main_window.hwnd().ok());
   }
@@ -114,7 +122,7 @@ unsafe extern "system" fn public_window_callback(
 #[command]
 fn cmd5(app: AppHandle) {
   let main_window = app.get_window("main").unwrap();
-  let deskbtm = prepared_deskbtm();
+  let deskbtm = prepared_deskbtm().lock().unwrap();
   unsafe {
     SetWindowSubclass(main_window.hwnd().ok(), Some(public_window_callback), 0, 0);
   }
@@ -124,7 +132,7 @@ struct RequestDefender {}
 
 #[command]
 async fn create_demo_window(app: AppHandle) {
-  let _window = tauri::WindowBuilder::new(
+  let window = tauri::WindowBuilder::new(
     &app,
     "label",
     tauri::WindowUrl::App("app/src/setting/index.html".into()),
@@ -215,7 +223,7 @@ fn main() {
           }
           "take_out" => {
             let main_window = app.get_window("main").unwrap();
-            let deskbtm = prepared_deskbtm();
+            let deskbtm = prepared_deskbtm().lock().unwrap();
             unsafe {
               SetParent(main_window.hwnd().ok(), GetDesktopWindow());
             }
@@ -230,40 +238,41 @@ fn main() {
       cmd1,
       cmd2,
       cmd3,
-      cmd4
+      cmd4,
+      cmd6
     ])
     .build(tauri::generate_context!())
     .expect("error while running tauri application");
-  unsafe {
-    let hook = SetWindowsHookExW(
-      WH_MOUSE_LL,
-      Some(enum_window_proc),
-      GetModuleHandleW(PCWSTR::null()).ok(),
-      0,
-    );
+  // unsafe {
+  //   let hook = SetWindowsHookExW(
+  //     WH_MOUSE_LL,
+  //     Some(enum_window_proc),
+  //     GetModuleHandleW(PCWSTR::null()).ok(),
+  //     0,
+  //   );
 
-    unsafe extern "system" fn enum_window_proc(
-      code: i32,
-      wparam: WPARAM,
-      lparam: LPARAM,
-    ) -> LRESULT {
-      println!("{} {:?} {:?}", code, wparam, lparam);
+  //   unsafe extern "system" fn enum_window_proc(
+  //     code: i32,
+  //     wparam: WPARAM,
+  //     lparam: LPARAM,
+  //   ) -> LRESULT {
+  //     println!("{} {:?} {:?}", code, wparam, lparam);
 
-      let WPARAM(msg) = wparam;
+  //     let WPARAM(msg) = wparam;
 
-      match msg as u32 {
-        WM_RBUTTONUP => {
-          dbg!("====================");
-        }
-        WM_LBUTTONDOWN => {
-          dbg!("=============左边");
-        }
-        _ => (),
-      }
+  //     match msg as u32 {
+  //       WM_RBUTTONUP => {
+  //         dbg!("====================");
+  //       }
+  //       WM_LBUTTONDOWN => {
+  //         dbg!("=============左边");
+  //       }
+  //       _ => (),
+  //     }
 
-      CallNextHookEx(HHOOK(0), code, wparam, lparam)
-    }
-  }
+  //     CallNextHookEx(HHOOK(0), code, wparam, lparam)
+  //   }
+  // }
 
   builder.run(move |_app_handle, _e| {})
 }

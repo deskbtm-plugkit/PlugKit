@@ -6,7 +6,7 @@ authors = ["you"]
 repository = "https://github.com/deskbtm-abyss/abyss"
 default-run = "abyss-app"
 edition = "2021"
-rust-version = "1.57"
+rust-version = "1.63"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
