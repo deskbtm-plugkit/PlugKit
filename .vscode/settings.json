@@ -15,7 +15,6 @@
   "[ignore]": {
     "editor.defaultFormatter": "foxundermoon.shell-format"
   },
-  "explorer.experimental.fileNesting.enabled": true,
   "[properties]": {
     "editor.defaultFormatter": "foxundermoon.shell-format"
   },
