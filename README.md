@@ -7,7 +7,7 @@
   </a>
 </p>
 
-### NB: Abyss is a source-available software.
+#### NB: abyss is a source-available software.
 
 ## Code of conduct
 

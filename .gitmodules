@@ -1,3 +1,6 @@
 [submodule "core"]
 	path = core
 	url = https://github.com/deskbtm-abyss/core.git
+[submodule "built-in"]
+	path = built-in
+	url = https://github.com/deskbtm-abyss/built-in.git
