@@ -7,9 +7,10 @@
   </a>
 </p>
 
-
-
-Abyss is a source available software.
-
+### NB: Abyss is a source-available software.
 
 ## Code of conduct
+
+
+
+## Credit
