@@ -1,2 +1,2 @@
 [workspace]
-members = ["app/src-tauri", "core", "addons/*"]
+members = ["app/src-tauri", "core", "addons/*", "utils/*"]

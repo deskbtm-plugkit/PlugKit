@@ -4,3 +4,6 @@
 [submodule "built-in"]
 	path = built-in
 	url = https://github.com/deskbtm-abyss/built-in.git
+[submodule "addons"]
+	path = addons
+	url = https://github.com/deskbtm-abyss/addons.git

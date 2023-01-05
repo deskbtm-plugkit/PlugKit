@@ -21,7 +21,8 @@
     "packages/*",
     "built-in/*",
     "core",
-    "addons/*"
+    "addons/*",
+    "utils/*"
   ],
   "engines": {
     "node": ">= 16.0.0",
