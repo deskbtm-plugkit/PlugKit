@@ -1,5 +1,5 @@
 {
-  "name": "abyss-sdk",
+  "name": "@plugkit/sdk",
   "version": "0.0.0-alpha1",
   "main": "",
   "scripts": {

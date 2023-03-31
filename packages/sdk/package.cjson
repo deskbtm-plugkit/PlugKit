@@ -1,5 +1,5 @@
 {
-  "name": "abyss-sdk",
+  "name": "@plugkit/sdk",
   "version": "1.0.0",
   "main": "",
   "scripts": {
@@ -8,13 +8,13 @@
   "author": "",
   "license": "Apache-2.0",
   "description": "",
-  "abyss": {
+  "plugkit": {
     "config": {
       // 窗口类型 native, web
       "windowType": ""
     },
     "targetVersion": ">=1.2.9 <2.0.0",
-    "packageName": "com.deskbtm.abyss.demo",
+    "packageName": "com.deskbtm.plugkit.demo",
     "description": "wallpaper application example",
     // 插件详情描述
     "funcDescription": [
@@ -26,14 +26,14 @@
       ""
     ],
     //* 插件展示名
-    "displayName": "Abyss Wallpaper",
+    "displayName": "PlugKit Wallpaper",
     //   更新信息 or CHANGELOG路径
     "changelog": "",
     // 插件的原始站点
     "sourceSite": "",
     // 权限
     "permissions": [
-      "abyss"
+      "plugkit"
     ],
     // 应用中将用于网络请求的域
     "domainList": [],

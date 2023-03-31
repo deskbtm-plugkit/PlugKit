@@ -138,7 +138,7 @@ function Page1() {
           const home = await homeDir();
           const a = await resolve(
             home,
-            'AbyssProject/abyss/app/public/case.html',
+            'PlugKitProject/plugkit/app/public/case.html',
           );
 
           const htmlUri = convertFileSrc(a);

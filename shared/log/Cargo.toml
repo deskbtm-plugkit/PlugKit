@@ -1,0 +1,21 @@
+[package]
+name = "plugkit-addon-log"
+version = "0.0.1"
+authors = ["Han <deskbtm@outlook.com>"]
+description = "tauri-plugin-log extended for plugkit"
+edition = "2021"
+repository = "https://github.com/deskbtm-plugkit/plugkit"
+rust-version = "1.59"
+readme = "README.md"
+
+[dependencies]
+chrono = "0.4.22"
+fern = "0.6.1"
+log = "0.4.17"
+serde = "1.0.144"
+serde_json = "1.0.85"
+serde_repr = "0.1.9"
+tauri = { version = "1.2.4" }
+
+[features]
+colored = ["fern/colored"]

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema",
-  "title": "Abyss Plugin Config",
+  "title": "PlugKit Plugin Config",
   "description": "A product",
   "type": "object",
   "properties": {

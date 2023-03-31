@@ -8,12 +8,12 @@ mod tray;
 use std::thread;
 
 use crate::tray::create_tray;
-use abyss_addon_log::fern::colors::{Color, ColoredLevelConfig};
-use abyss_addon_log::{LogTarget, LoggerBuilder, RotationStrategy};
+use plugkit_addon_log::fern::colors::{Color, ColoredLevelConfig};
+use plugkit_addon_log::{LogTarget, LoggerBuilder, RotationStrategy};
 
-use abyss_core::webview2_com::Microsoft::Web::WebView2::Win32::*;
-use abyss_core::webview2_com::PermissionRequestedEventHandler;
-use abyss_core::windows::prepared_deskbtm;
+use plugkit_core::webview2_com::Microsoft::Web::WebView2::Win32::*;
+use plugkit_core::webview2_com::PermissionRequestedEventHandler;
+use plugkit_core::windows::prepared_deskbtm;
 use tauri::{command, AppHandle, Manager, SystemTrayEvent};
 
 use windows::Win32::Foundation::*;

@@ -1,0 +1,14 @@
+{
+  "name": "@plugkit-addon/log",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./lib/index.ts",
+  "dependencies": {
+    "@tauri-apps/api": "^1.2.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.2.3",
+    "@types/node": "18.7.6"
+  }
+}

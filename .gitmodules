@@ -1,9 +1,9 @@
 [submodule "core"]
-	path = core
-	url = https://github.com/deskbtm-abyss/core.git
+path = core
+url = https://github.com/deskbtm-plugkit/core.git
 [submodule "built-in"]
-	path = built-in
-	url = https://github.com/deskbtm-abyss/built-in.git
+path = built-in
+url = https://github.com/deskbtm-plugkit/built-in.git
 [submodule "addons"]
-	path = addons
-	url = https://github.com/deskbtm-abyss/addons.git
+path = addons
+url = https://github.com/deskbtm-plugkit/addons.git

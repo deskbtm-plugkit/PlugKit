@@ -1,13 +1,13 @@
 <a href="#" target="_blank" rel="noopener noreferrer">
-<img width="70" src="https://raw.githubusercontent.com/deskbtm-abyss/abyss/main/app/logo.png" alt="abyss" /></a>
+<img width="70" src="https://raw.githubusercontent.com/deskbtm-plugkit/plugkit/main/app/logo.png" alt="PlugKit" /></a>
 
 <p align="center">
   <a href="#" target="_blank" rel="noopener noreferrer">
-    <h1 align="center">Abyss</h1>
+    <h1 align="center">PlugKit</h1>
   </a>
 </p>
 
-#### NB: abyss is a source-available software.
+#### NB: PlugKit is a source-available software.
 
 ## Code of conduct
 
