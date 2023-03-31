@@ -1,10 +1,12 @@
 <a href="#" target="_blank" rel="noopener noreferrer">
-<img width="70" src="https://raw.githubusercontent.com/deskbtm-plugkit/plugkit/main/app/logo.png" alt="PlugKit" /></a>
+<img width="70" src="https://github.com/deskbtm-plugkit/plugkit/blob/main/app/src-tauri/icons/Square310x310Logo.png" alt="plugkit" /></a>
 
 <p align="center">
-  <a href="#" target="_blank" rel="noopener noreferrer">
-    <h1 align="center">PlugKit</h1>
-  </a>
+  <h1 align="center">
+    <a href="https://plugkit.deskbtm.com" target="_blank" rel="noopener noreferrer">
+      PlugKit
+    </a>
+  </h1>
 </p>
 
 #### NB: PlugKit is a source-available software.
