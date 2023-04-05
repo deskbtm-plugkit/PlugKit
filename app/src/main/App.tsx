@@ -1,14 +1,13 @@
 // import { invoke } from '@tauri-apps/api/tauri';
-import './App.css';
-import React from 'react';
 import { invoke } from '@tauri-apps/api';
-import { useRef, useState } from 'react';
 import { listen } from '@tauri-apps/api/event';
-import { appWindow, WebviewWindow } from '@tauri-apps/api/window';
+import { isPermissionGranted } from '@tauri-apps/api/notification';
 import { homeDir, resolve } from '@tauri-apps/api/path';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
-import { Route, BrowserRouter, Routes, useNavigate } from 'react-router-dom';
-import { isPermissionGranted } from '@tauri-apps/api/notification';
+import { appWindow, WebviewWindow } from '@tauri-apps/api/window';
+import React, { useRef, useState } from 'react';
+import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
+import './App.css';
 
 const children: React.ReactNode[] = [];
 
