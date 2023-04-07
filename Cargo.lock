@@ -2195,7 +2195,6 @@ dependencies = [
  "serde_json",
  "tauri",
  "tauri-build",
- "tauri-runtime-wry",
  "windows 0.39.0",
 ]
 

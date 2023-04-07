@@ -13,7 +13,7 @@ use plugkit_addon_log::{LogTarget, LoggerBuilder, RotationStrategy};
 
 use plugkit_core::webview2_com::Microsoft::Web::WebView2::Win32::*;
 use plugkit_core::webview2_com::PermissionRequestedEventHandler;
-use plugkit_core::windows::prepared_deskbtm;
+use plugkit_core::windows::deskbtm;
 use tauri::{command, AppHandle, Manager, SystemTrayEvent};
 
 use windows::Win32::Foundation::*;
@@ -35,7 +35,7 @@ use windows::{
 
 #[command]
 fn cmd1() {
-  let instance = prepared_deskbtm().lock().unwrap();
+  let instance = deskbtm().lock().unwrap();
   dbg!(instance);
 }
 
@@ -45,7 +45,7 @@ struct LauncherWindow {}
 #[command]
 fn cmd2() {
   unsafe {
-    let deskbtm = &prepared_deskbtm().lock().unwrap();
+    let deskbtm = &deskbtm().lock().unwrap();
     let a = GetDesktopWindow();
     let b = FindWindowW(w!("Progman\0"), PCWSTR::null());
     dbg!(deskbtm);
@@ -53,9 +53,9 @@ fn cmd2() {
     deskbtm.clear();
     dbg!(deskbtm);
 
-    let deskbtm1 = prepared_deskbtm().lock().unwrap();
+    // let deskbtm1 = deskbtm().lock().unwrap();
 
-    dbg!(deskbtm1);
+    // dbg!(deskbtm1);
   }
   // let handle = thread::spawn(move || {
   //   dbg!("======================================");
@@ -84,7 +84,7 @@ fn cmd2() {
 #[command]
 fn cmd6(app: AppHandle) {
   let main_window = app.get_window("label").unwrap();
-  let deskbtm = prepared_deskbtm().lock().unwrap();
+  let deskbtm = deskbtm().lock().unwrap();
   unsafe {
     SetParent(main_window.hwnd().ok(), deskbtm.view);
   }
@@ -93,7 +93,7 @@ fn cmd6(app: AppHandle) {
 #[command]
 fn cmd3(app: AppHandle) {
   let main_window = app.get_window("main").unwrap();
-  let deskbtm = prepared_deskbtm().lock().unwrap();
+  let deskbtm = deskbtm().lock().unwrap();
   unsafe {
     SetParent(main_window.hwnd().ok(), deskbtm.view);
   }
@@ -102,7 +102,7 @@ fn cmd3(app: AppHandle) {
 #[command]
 fn cmd4(app: AppHandle) {
   let main_window = app.get_window("main").unwrap();
-  let deskbtm = prepared_deskbtm().lock().unwrap();
+  let deskbtm = deskbtm().lock().unwrap();
   unsafe {
     SetParent(deskbtm.view, main_window.hwnd().ok());
   }
@@ -122,7 +122,7 @@ unsafe extern "system" fn public_window_callback(
 #[command]
 fn cmd5(app: AppHandle) {
   let main_window = app.get_window("main").unwrap();
-  let deskbtm = prepared_deskbtm().lock().unwrap();
+  let deskbtm = deskbtm().lock().unwrap();
   unsafe {
     SetWindowSubclass(main_window.hwnd().ok(), Some(public_window_callback), 0, 0);
   }
@@ -223,7 +223,7 @@ fn main() {
           }
           "take_out" => {
             let main_window = app.get_window("main").unwrap();
-            let deskbtm = prepared_deskbtm().lock().unwrap();
+            let deskbtm = deskbtm().lock().unwrap();
             unsafe {
               SetParent(main_window.hwnd().ok(), GetDesktopWindow());
             }
