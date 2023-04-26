@@ -1,5 +1,7 @@
 {
   "recommendations": [
-    "deskbtm.colorful-monorepo"
+    "deskbtm.colorful-monorepo",
+    "foxundermoon.shell-format",
+    "esbenp.prettier-vscode"
   ]
 }

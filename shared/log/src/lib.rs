@@ -244,7 +244,7 @@ impl LoggerBuilder {
               .into()
             }
             LogTarget::LogDir => {
-              let path = app_handle.path_resolver().log_dir().unwrap();
+              let path = app_handle.path_resolver().app_log_dir().unwrap();
               if !path.exists() {
                 fs::create_dir_all(&path).unwrap();
               }

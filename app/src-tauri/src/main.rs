@@ -16,6 +16,7 @@ use plugkit_core::webview2_com::PermissionRequestedEventHandler;
 use plugkit_core::windows::deskbtm;
 use tauri::{command, AppHandle, Manager, SystemTrayEvent};
 
+use tauri_runtime_wry::wry::webview::WebViewBuilderExtWindows;
 use windows::Win32::Foundation::*;
 use windows::Win32::Graphics::Gdi::UpdateWindow;
 use windows::Win32::System::LibraryLoader::GetModuleHandleW;
@@ -143,19 +144,18 @@ async fn create_demo_window(app: AppHandle) {
 
 fn main() {
   let tray = create_tray();
-  let colors = ColoredLevelConfig::new()
-    .info(Color::Green)
-    .debug(Color::Magenta);
-  let mut logger_option = LoggerBuilder::default()
+  let mut logger_options = LoggerBuilder::default()
     .targets([LogTarget::LogDir, LogTarget::Stdout])
-    .with_colors(colors)
     .rotation_strategy(RotationStrategy::KeepAll);
 
   if cfg!(debug_assertions) {
-    logger_option = logger_option.with_colors(colors);
+    let colors = ColoredLevelConfig::new()
+      .info(Color::Green)
+      .debug(Color::Magenta);
+    logger_options = logger_options.with_colors(colors);
   }
 
-  let logger_plugin = logger_option.build();
+  let logger_plugin = logger_options.build();
   // let event_loop = EventLoop::new();
 
   // event_loop.run(move |event, _, control_flow| match event {
@@ -175,28 +175,28 @@ fn main() {
 
       app.listen_global("invoke-demo", |_event| {});
 
-      #[allow(unused_must_use)]
-      {
-        main_window.with_webview(|webview| unsafe {
-          let webview = webview.controller().CoreWebView2().unwrap();
-          let mut token = EventRegistrationToken::default();
+      main_window.with_webview(|webview| unsafe {
+        // let wry_webview: tauri_runtime_wry::Webview = webview.into();
+        // WebViewBuilderExtWindows::with_additional_browser_args(self, String("demo"));
+        // let a = QQQQQ;
+        let webview2: ICoreWebView2 = webview.controller().CoreWebView2().unwrap();
+        let mut token = EventRegistrationToken::default();
 
-          webview.add_PermissionRequested(
-            &PermissionRequestedEventHandler::create(Box::new(|_, args| {
-              if let Some(args) = args {
-                let mut kind = COREWEBVIEW2_PERMISSION_KIND_UNKNOWN_PERMISSION;
-                args.PermissionKind(&mut kind)?;
-                dbg!(kind);
-                if kind == COREWEBVIEW2_PERMISSION_KIND_CLIPBOARD_READ {
-                  args.SetState(COREWEBVIEW2_PERMISSION_STATE_ALLOW)?;
-                }
+        webview2.add_PermissionRequested(
+          &PermissionRequestedEventHandler::create(Box::new(|_, args| {
+            if let Some(args) = args {
+              let mut kind = COREWEBVIEW2_PERMISSION_KIND_UNKNOWN_PERMISSION;
+              args.PermissionKind(&mut kind)?;
+              dbg!(kind);
+              if kind == COREWEBVIEW2_PERMISSION_KIND_CLIPBOARD_READ {
+                args.SetState(COREWEBVIEW2_PERMISSION_STATE_ALLOW)?;
               }
-              Ok(())
-            })),
-            &mut token,
-          );
-        });
-      }
+            }
+            Ok(())
+          })),
+          &mut token,
+        );
+      });
 
       // main_window.config();
       //   .on_web_resource_request(|request, response| {});
@@ -218,6 +218,7 @@ fn main() {
             let window = app.get_window("main").unwrap();
 
             window.show().unwrap();
+
             // you can also `set_selected`, `set_enabled` and `set_native_image` (macOS only).
             // item_handle.set_title("Show").unwrap();
           }
