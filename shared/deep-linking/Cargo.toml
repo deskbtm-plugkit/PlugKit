@@ -4,8 +4,8 @@ version = "0.0.1"
 description = "plugkit addon forks from https://github.com/FabianLars/tauri-plugin-deep-link"
 repository = "https://github.com/deskbtm-plugkit/plugkit"
 readme = "README.md"
-#authors = { workspace = true }
-rust-version = "1.59"
+authors = ["Han <deskbtm@outlook.com>"]
+rust-version = "1.60"
 edition = "2021"
 
 
