@@ -14,13 +14,7 @@ tauri-build = { version = "1.3", features = ["isolation"] }
 [dependencies]
 serde_json = { version = "1.0" }
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.3.0", features = [
-  "api-all",
-  "devtools",
-  "isolation",
-  "system-tray",
-  "wry",
-] }
+tauri = { version = "1.3.0", features = ["api-all", "devtools", "isolation", "system-tray", "wry"] }
 tauri-runtime-wry = { workspace = true }
 plugkit-core = { workspace = true }
 plugkit-addon-log = { workspace = true, features = ["colored"] }
