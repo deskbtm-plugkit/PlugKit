@@ -2458,7 +2458,6 @@ dependencies = [
  "log",
  "once_cell",
  "tauri-utils",
- "webview2-com",
  "windows 0.39.0",
  "winreg 0.50.0",
 ]
@@ -2471,6 +2470,7 @@ dependencies = [
  "fern",
  "log",
  "serde",
+ "serde_json",
  "serde_repr",
  "tauri",
 ]
