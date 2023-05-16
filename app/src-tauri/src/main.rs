@@ -5,8 +5,6 @@
 
 mod tray;
 
-use std::thread;
-
 use crate::tray::create_tray;
 use plugkit_addon_log::fern::colors::{Color, ColoredLevelConfig};
 use plugkit_addon_log::{LogTarget, LoggerBuilder, RotationStrategy};

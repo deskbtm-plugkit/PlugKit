@@ -1,10 +1,9 @@
 [package]
 name = "plugkit-app"
-version = "0.0.1"
+version.workspace = true
 description = "A desktop extension"
 repository = "https://github.com/deskbtm-plugkit/plugkit"
 authors = ["Han <deskbtm@outlook.com>"]
-rust-version = "1.60"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -23,8 +22,8 @@ tauri = { workspace = true, features = [
   "wry",
 ] }
 tauri-runtime-wry = { workspace = true }
-plugkit-core = { version = "0.0.1" }
-plugkit-addon-log = { version = "0.0.1", features = ["colored"] }
+plugkit-core = { workspace = true }
+plugkit-addon-log = { workspace = true, features = ["colored"] }
 
 
 [target."cfg(windows)".dependencies]
