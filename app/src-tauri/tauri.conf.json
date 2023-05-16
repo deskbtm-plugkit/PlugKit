@@ -1,10 +1,9 @@
 {
-  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
     "beforeBuildCommand": "yarn build",
     "beforeDevCommand": "yarn dev",
     "withGlobalTauri": true,
-    "devPath": "http://127.0.0.1:5173",
+    "devPath": "http://localhost:1420",
     "distDir": "../dist"
   },
   "package": {
@@ -12,12 +11,12 @@
     "version": "0.1.0"
   },
   "tauri": {
-    "pattern": {
-      "use": "isolation",
-      "options": {
-        "dir": "../dist-isolation"
-      }
-    },
+    // "pattern": {
+    //   "use": "isolation",
+    //   "options": {
+    //     "dir": "../dist-isolation"
+    //   }
+    // },
     "allowlist": {
       "all": true,
       "protocol": {

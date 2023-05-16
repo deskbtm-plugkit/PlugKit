@@ -14,7 +14,7 @@
     "eslint-plugin-import": "2.24.2",
     "eslint-plugin-unused-imports": "1.1.4",
     "prettier": "2.4.0",
-    "typescript": "4.6.3"
+    "typescript": "4.9.5"
   },
   "workspaces": [
     "app",
@@ -26,7 +26,7 @@
     "shared/*"
   ],
   "engines": {
-    "node": ">= 16.0.0",
+    "node": ">= 18.0.0",
     "npm": "please-use-yarn",
     "yarn": ">2.0.0",
     "pnpm": "please-use-yarn"

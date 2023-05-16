@@ -16,9 +16,7 @@ use plugkit_core::webview2_com::PermissionRequestedEventHandler;
 use plugkit_core::windows::deskbtm;
 use tauri::{command, AppHandle, Manager, SystemTrayEvent};
 
-use tauri_runtime_wry::wry::webview::WebViewBuilderExtWindows;
 use windows::Win32::Foundation::*;
-use windows::Win32::Graphics::Gdi::UpdateWindow;
 use windows::Win32::System::LibraryLoader::GetModuleHandleW;
 use windows::Win32::System::WinRT::EventRegistrationToken;
 use windows::Win32::UI::Shell::SetWindowSubclass;
@@ -143,6 +141,12 @@ async fn create_demo_window(app: AppHandle) {
 }
 
 fn main() {
+  // disable webview2 elastic overscroll.
+  #[cfg(target_os = "windows")]
+  std::env::set_var(
+    "WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS",
+    "--disable-features=ElasticOverscroll",
+  );
   let tray = create_tray();
   let mut logger_options = LoggerBuilder::default()
     .targets([LogTarget::LogDir, LogTarget::Stdout])
@@ -176,9 +180,6 @@ fn main() {
       app.listen_global("invoke-demo", |_event| {});
 
       main_window.with_webview(|webview| unsafe {
-        // let wry_webview: tauri_runtime_wry::Webview = webview.into();
-        // WebViewBuilderExtWindows::with_additional_browser_args(self, String("demo"));
-        // let a = QQQQQ;
         let webview2: ICoreWebView2 = webview.controller().CoreWebView2().unwrap();
         let mut token = EventRegistrationToken::default();
 
@@ -244,36 +245,36 @@ fn main() {
     ])
     .build(tauri::generate_context!())
     .expect("error while running tauri application");
-  // unsafe {
-  //   let hook = SetWindowsHookExW(
-  //     WH_MOUSE_LL,
-  //     Some(enum_window_proc),
-  //     GetModuleHandleW(PCWSTR::null()).ok(),
-  //     0,
-  //   );
+  unsafe {
+    let hook = SetWindowsHookExW(
+      WH_MOUSE_LL,
+      Some(enum_window_proc),
+      GetModuleHandleW(PCWSTR::null()).ok(),
+      0,
+    );
 
-  //   unsafe extern "system" fn enum_window_proc(
-  //     code: i32,
-  //     wparam: WPARAM,
-  //     lparam: LPARAM,
-  //   ) -> LRESULT {
-  //     println!("{} {:?} {:?}", code, wparam, lparam);
+    unsafe extern "system" fn enum_window_proc(
+      code: i32,
+      wparam: WPARAM,
+      lparam: LPARAM,
+    ) -> LRESULT {
+      println!("{} {:?} {:?}", code, wparam, lparam);
 
-  //     let WPARAM(msg) = wparam;
+      let WPARAM(msg) = wparam;
 
-  //     match msg as u32 {
-  //       WM_RBUTTONUP => {
-  //         dbg!("====================");
-  //       }
-  //       WM_LBUTTONDOWN => {
-  //         dbg!("=============左边");
-  //       }
-  //       _ => (),
-  //     }
+      match msg as u32 {
+        WM_RBUTTONUP => {
+          dbg!("====================");
+        }
+        WM_LBUTTONDOWN => {
+          dbg!("=============左边");
+        }
+        _ => (),
+      }
 
-  //     CallNextHookEx(HHOOK(0), code, wparam, lparam)
-  //   }
-  // }
+      CallNextHookEx(HHOOK(0), code, wparam, lparam)
+    }
+  }
 
   builder.run(move |_app_handle, _e| {})
 }

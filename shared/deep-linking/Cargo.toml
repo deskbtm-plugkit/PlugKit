@@ -4,9 +4,9 @@ version = "0.0.1"
 description = "plugkit addon forks from https://github.com/FabianLars/tauri-plugin-deep-link"
 repository = "https://github.com/deskbtm-plugkit/plugkit"
 readme = "README.md"
-authors.workspace = true
-edition.workspace = true
-rust-version.workspace = true
+#authors = { workspace = true }
+rust-version = "1.59"
+edition = "2021"
 
 
 [target."cfg(windows)".dependencies]
