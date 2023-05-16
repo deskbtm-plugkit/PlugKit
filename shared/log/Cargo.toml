@@ -1,11 +1,10 @@
 [package]
 name = "plugkit-addon-log"
-version = "0.0.1"
+version.workspace = true
 description = "tauri-plugin-log extended for plugkit"
 repository = "https://github.com/deskbtm-plugkit/plugkit"
 readme = "README.md"
 authors = ["Han <deskbtm@outlook.com>"]
-rust-version = "1.60"
 edition = "2021"
 
 [dependencies]
