@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-License-Identifier: MIT
 
-// Copyright (C) 2022 Han
-
 use fern::FormatCallback;
+use log::{logger, RecordBuilder};
 use log::{LevelFilter, Record};
 use serde::Serialize;
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use std::borrow::Cow;
+use std::collections::HashMap;
 use std::{
   fmt::Arguments,
   fs::{self, File},
@@ -21,9 +21,11 @@ use tauri::{
 };
 
 pub use fern;
+use time::OffsetDateTime;
 
 const DEFAULT_MAX_FILE_SIZE: u128 = 40000;
 const DEFAULT_ROTATION_STRATEGY: RotationStrategy = RotationStrategy::KeepOne;
+const DEFAULT_TIMEZONE_STRATEGY: TimezoneStrategy = TimezoneStrategy::UseUtc;
 const DEFAULT_LOG_TARGETS: [LogTarget; 2] = [LogTarget::Stdout, LogTarget::LogDir];
 
 /// An enum representing the available verbosity levels of the logger.
@@ -83,6 +85,23 @@ pub enum RotationStrategy {
   KeepOne,
 }
 
+#[derive(Debug, Clone)]
+pub enum TimezoneStrategy {
+  UseUtc,
+  UseLocal,
+}
+
+impl TimezoneStrategy {
+  pub fn get_now(&self) -> OffsetDateTime {
+    match self {
+      TimezoneStrategy::UseUtc => OffsetDateTime::now_utc(),
+      TimezoneStrategy::UseLocal => {
+        OffsetDateTime::now_local().unwrap_or_else(|_| OffsetDateTime::now_utc())
+      } // Fallback to UTC since Rust cannot determine local timezone
+    }
+  }
+}
+
 #[derive(Debug, Serialize, Clone)]
 struct RecordPayload {
   message: String,
@@ -116,48 +135,89 @@ pub enum LogTarget {
 }
 
 #[tauri::command]
-fn log(level: LogLevel, message: String, location: Option<&str>) {
-  let location = location.unwrap_or("Native");
+fn log(
+  level: LogLevel,
+  message: String,
+  location: Option<&str>,
+  file: Option<&str>,
+  line: Option<u32>,
+  key_values: Option<HashMap<String, String>>,
+) {
+  let location = location.unwrap_or("webview");
+  let mut builder = RecordBuilder::new();
+  builder
+    .level(level.into())
+    .target(location)
+    .file(file)
+    .line(line);
 
-  log::log!(target: location, level.into(), "{}", message)
+  let key_values = key_values.unwrap_or_default();
+  let mut kv = HashMap::new();
+  for (k, v) in key_values.iter() {
+    kv.insert(k.as_str(), v.as_str());
+  }
+  builder.key_values(&kv);
+
+  logger().log(&builder.args(format_args!("{message}")).build());
 }
 
-pub struct LoggerBuilder {
+pub struct Builder {
   dispatch: fern::Dispatch,
   rotation_strategy: RotationStrategy,
+  timezone_strategy: TimezoneStrategy,
   max_file_size: u128,
   targets: Vec<LogTarget>,
 }
 
-impl Default for LoggerBuilder {
+impl Default for Builder {
   fn default() -> Self {
+    let format =
+      time::format_description::parse("[[[year]-[month]-[day]][[[hour]:[minute]:[second]]")
+        .unwrap();
     let dispatch = fern::Dispatch::new().format(move |out, message, record| {
       out.finish(format_args!(
-        "[{}:{}] {}[{}][{}] {}",
-        record.file().unwrap_or("unknown"),
-        record.line().unwrap(),
-        chrono::Local::now().format("[%Y-%m-%d %H:%M:%S]"),
-        record.target(),
+        "{}[{}][{}] {}",
+        DEFAULT_TIMEZONE_STRATEGY.get_now().format(&format).unwrap(),
         record.level(),
+        record.target(),
         message
       ))
     });
     Self {
       dispatch,
       rotation_strategy: DEFAULT_ROTATION_STRATEGY,
+      timezone_strategy: DEFAULT_TIMEZONE_STRATEGY,
       max_file_size: DEFAULT_MAX_FILE_SIZE,
       targets: DEFAULT_LOG_TARGETS.into(),
     }
   }
 }
 
-impl LoggerBuilder {
+impl Builder {
   pub fn new() -> Self {
     Default::default()
   }
 
   pub fn rotation_strategy(mut self, rotation_strategy: RotationStrategy) -> Self {
     self.rotation_strategy = rotation_strategy;
+    self
+  }
+
+  pub fn timezone_strategy(mut self, timezone_strategy: TimezoneStrategy) -> Self {
+    self.timezone_strategy = timezone_strategy.clone();
+
+    let format =
+      time::format_description::parse("[[[year]-[month]-[day]][[[hour]:[minute]:[second]]")
+        .unwrap();
+    self.dispatch = fern::Dispatch::new().format(move |out, message, record| {
+      out.finish(format_args!(
+        "{}[{}][{}] {}",
+        timezone_strategy.get_now().format(&format).unwrap(),
+        record.level(),
+        record.target(),
+        message
+      ))
+    });
     self
   }
 
@@ -204,16 +264,17 @@ impl LoggerBuilder {
 
   #[cfg(feature = "colored")]
   pub fn with_colors(self, colors: fern::colors::ColoredLevelConfig) -> Self {
-    self.format(move |out, message, record| {
-      dbg!(record.target());
+    let format =
+      time::format_description::parse("[[[year]-[month]-[day]][[[hour]:[minute]:[second]]")
+        .unwrap();
 
+    let timezone_strategy = self.timezone_strategy.clone();
+    self.format(move |out, message, record| {
       out.finish(format_args!(
-        "[{}:{}] {}[{}][{}] {}",
-        record.file().unwrap_or("unknown"),
-        record.line().unwrap(),
-        chrono::Local::now().format("[%Y-%m-%d %H:%M:%S]"),
-        record.target(),
+        "{}[{}][{}] {}",
+        timezone_strategy.get_now().format(&format).unwrap(),
         colors.color(record.level()),
+        record.target(),
         message
       ))
     })
@@ -232,13 +293,14 @@ impl LoggerBuilder {
             LogTarget::Stderr => fern::Output::from(std::io::stderr()),
             LogTarget::Folder(path) => {
               if !path.exists() {
-                fs::create_dir_all(&path).unwrap();
+                fs::create_dir_all(path).unwrap();
               }
 
               fern::log_file(get_log_file_path(
                 &path,
                 app_name,
                 &self.rotation_strategy,
+                &self.timezone_strategy,
                 self.max_file_size,
               )?)?
               .into()
@@ -253,6 +315,7 @@ impl LoggerBuilder {
                 &path,
                 app_name,
                 &self.rotation_strategy,
+                &self.timezone_strategy,
                 self.max_file_size,
               )?)?
               .into()
@@ -286,9 +349,10 @@ fn get_log_file_path(
   dir: &impl AsRef<Path>,
   app_name: &str,
   rotation_strategy: &RotationStrategy,
+  timezone_strategy: &TimezoneStrategy,
   max_file_size: u128,
 ) -> plugin::Result<PathBuf> {
-  let path = dir.as_ref().join(format!("{}.log", app_name));
+  let path = dir.as_ref().join(format!("{app_name}.log"));
 
   if path.exists() {
     let log_size = File::open(&path)?.metadata()?.len() as u128;
@@ -298,7 +362,13 @@ fn get_log_file_path(
           let to = dir.as_ref().join(format!(
             "{}_{}.log",
             app_name,
-            chrono::Local::now().format("%Y-%m-%d_%H-%M-%S")
+            timezone_strategy
+              .get_now()
+              .format(
+                &time::format_description::parse("[year]-[month]-[day]_[hour]-[minute]-[second]")
+                  .unwrap()
+              )
+              .unwrap(),
           ));
           if to.is_file() {
             // designated rotated log file name already exists

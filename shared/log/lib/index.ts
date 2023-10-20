@@ -1,9 +1,11 @@
-// Copyright 2021 Tauri Programme within The Commons Conservancy
-// SPDX-License-Identifier: Apache-2.0
-// SPDX-License-Identifier: MIT
-
 import { invoke } from '@tauri-apps/api/tauri';
-import { listen } from '@tauri-apps/api/event';
+import { listen, UnlistenFn } from '@tauri-apps/api/event';
+
+export type LogOptions = {
+  file?: string;
+  line?: number;
+  keyValues?: Record<string, string | undefined>;
+};
 
 enum LogLevel {
   /**
@@ -38,17 +40,31 @@ enum LogLevel {
   Error,
 }
 
-async function log(level: LogLevel, message: string): Promise<void> {
+async function log(
+  level: LogLevel,
+  message: string,
+  options?: LogOptions,
+): Promise<void> {
   const traces = new Error().stack?.split('\n').map((line) => line.split('@'));
 
   const filtered = traces?.filter(([name, location]) => {
-    return name.length && location !== '[native code]';
+    return name.length > 0 && location !== '[native code]';
   });
+
+  const { file, line, keyValues } = options ?? {};
+
+  let location = filtered?.[0]?.filter((v) => v.length > 0).join('@');
+  if (location === 'Error') {
+    location = 'webview::unknown';
+  }
 
   await invoke('plugin:log|log', {
     level,
     message,
-    location: filtered?.[0]?.join('@'),
+    location,
+    file,
+    line,
+    keyValues,
   });
 }
 
@@ -68,8 +84,11 @@ async function log(level: LogLevel, message: string): Promise<void> {
  * error(`Error: ${err_info} on port ${port}`);
  * ```
  */
-export async function error(message: string): Promise<void> {
-  await log(LogLevel.Error, message);
+export async function error(
+  message: string,
+  options?: LogOptions,
+): Promise<void> {
+  await log(LogLevel.Error, message, options);
 }
 
 /**
@@ -87,8 +106,11 @@ export async function error(message: string): Promise<void> {
  * warn(`Warning! {warn_description}!`);
  * ```
  */
-export async function warn(message: string): Promise<void> {
-  await log(LogLevel.Warn, message);
+export async function warn(
+  message: string,
+  options?: LogOptions,
+): Promise<void> {
+  await log(LogLevel.Warn, message, options);
 }
 
 /**
@@ -106,8 +128,11 @@ export async function warn(message: string): Promise<void> {
  * info(`Connected to port {conn_info.port} at {conn_info.speed} Mb/s`);
  * ```
  */
-export async function info(message: string): Promise<void> {
-  await log(LogLevel.Info, message);
+export async function info(
+  message: string,
+  options?: LogOptions,
+): Promise<void> {
+  await log(LogLevel.Info, message, options);
 }
 
 /**
@@ -125,8 +150,11 @@ export async function info(message: string): Promise<void> {
  * debug(`New position: x: {pos.x}, y: {pos.y}`);
  * ```
  */
-export async function debug(message: string): Promise<void> {
-  await log(LogLevel.Debug, message);
+export async function debug(
+  message: string,
+  options?: LogOptions,
+): Promise<void> {
+  await log(LogLevel.Debug, message, options);
 }
 
 /**
@@ -144,8 +172,11 @@ export async function debug(message: string): Promise<void> {
  * trace(`Position is: x: {pos.x}, y: {pos.y}`);
  * ```
  */
-export async function trace(message: string): Promise<void> {
-  await log(LogLevel.Trace, message);
+export async function trace(
+  message: string,
+  options?: LogOptions,
+): Promise<void> {
+  await log(LogLevel.Trace, message, options);
 }
 
 interface RecordPayload {
@@ -153,27 +184,35 @@ interface RecordPayload {
   message: string;
 }
 
-export function attachConsole() {
-  return listen('log://log', (event) => {
+export async function attachConsole(): Promise<UnlistenFn> {
+  return await listen('log://log', (event) => {
     const payload = event.payload as RecordPayload;
+
+    // Strip ANSI escape codes
+    const message = payload.message.replace(
+      // TODO: Investigate security/detect-unsafe-regex
+      /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+      '',
+    );
 
     switch (payload.level) {
       case LogLevel.Trace:
-        console.log(payload.message);
+        console.log(message);
         break;
       case LogLevel.Debug:
-        console.debug(payload.message);
+        console.debug(message);
         break;
       case LogLevel.Info:
-        console.info(payload.message);
+        console.info(message);
         break;
       case LogLevel.Warn:
-        console.warn(payload.message);
+        console.warn(message);
         break;
       case LogLevel.Error:
-        console.error(payload.message);
+        console.error(message);
         break;
       default:
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         throw new Error(`unknown log level ${payload.level}`);
     }
   });

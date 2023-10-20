@@ -110,11 +110,7 @@
       {
         "label": "main",
         "url": "/app/src/",
-        "fullscreen": false,
-        "height": 600,
-        "width": 850,
-        "minHeight": 600,
-        "minWidth": 850,
+        "maximized": true,
         "resizable": true,
         "center": true,
         "transparent": true,

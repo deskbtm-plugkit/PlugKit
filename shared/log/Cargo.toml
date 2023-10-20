@@ -8,13 +8,14 @@ authors = ["Han <deskbtm@outlook.com>"]
 edition = "2021"
 
 [dependencies]
-chrono = "0.4.22"
-fern = "0.6.1"
-log = { version = "0.4.17" }
-serde = { version = "1.0" }
-serde_json = { version = "1.0" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tauri = { workspace = true }
 serde_repr = "0.1.9"
-tauri = { version = "1.3.0" }
+byte-unit = "4.0"
+fern = "0.6.1"
+log = { workspace = true, features = ["kv_unstable"] }
+time = { version = "0.3", features = ["formatting", "local-offset"] }
 
 [features]
 colored = ["fern/colored"]

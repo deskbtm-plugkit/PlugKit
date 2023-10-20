@@ -7,7 +7,7 @@ mod tray;
 
 use crate::tray::create_tray;
 use plugkit_addon_log::fern::colors::{Color, ColoredLevelConfig};
-use plugkit_addon_log::{LogTarget, LoggerBuilder, RotationStrategy};
+use plugkit_addon_log::{Builder as LoggerBuilder, LogTarget, RotationStrategy};
 
 use plugkit_core::webview2_com::Microsoft::Web::WebView2::Win32::*;
 use plugkit_core::webview2_com::PermissionRequestedEventHandler;
@@ -243,36 +243,36 @@ fn main() {
     ])
     .build(tauri::generate_context!())
     .expect("error while running tauri application");
-  unsafe {
-    let hook = SetWindowsHookExW(
-      WH_MOUSE_LL,
-      Some(enum_window_proc),
-      GetModuleHandleW(PCWSTR::null()).ok(),
-      0,
-    );
+  // unsafe {
+  //   let hook = SetWindowsHookExW(
+  //     WH_MOUSE_LL,
+  //     Some(enum_window_proc),
+  //     GetModuleHandleW(PCWSTR::null()).ok(),
+  //     0,
+  //   );
 
-    unsafe extern "system" fn enum_window_proc(
-      code: i32,
-      wparam: WPARAM,
-      lparam: LPARAM,
-    ) -> LRESULT {
-      println!("{} {:?} {:?}", code, wparam, lparam);
+  //   unsafe extern "system" fn enum_window_proc(
+  //     code: i32,
+  //     wparam: WPARAM,
+  //     lparam: LPARAM,
+  //   ) -> LRESULT {
+  //     println!("{} {:?} {:?}", code, wparam, lparam);
 
-      let WPARAM(msg) = wparam;
+  //     let WPARAM(msg) = wparam;
 
-      match msg as u32 {
-        WM_RBUTTONUP => {
-          dbg!("====================");
-        }
-        WM_LBUTTONDOWN => {
-          dbg!("=============左边");
-        }
-        _ => (),
-      }
+  //     match msg as u32 {
+  //       WM_RBUTTONUP => {
+  //         dbg!("====================");
+  //       }
+  //       WM_LBUTTONDOWN => {
+  //         dbg!("=============左边");
+  //       }
+  //       _ => (),
+  //     }
 
-      CallNextHookEx(HHOOK(0), code, wparam, lparam)
-    }
-  }
+  //     CallNextHookEx(HHOOK(0), code, wparam, lparam)
+  //   }
+  // }
 
   builder.run(move |_app_handle, _e| {})
 }

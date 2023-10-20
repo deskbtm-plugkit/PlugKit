@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import React from 'react';
-import { appWindow } from '@tauri-apps/api/window';
+// import { appWindow } from '@tauri-apps/api/window';
 import { emit } from '@tauri-apps/api/event';
 
 function App() {
@@ -8,7 +8,14 @@ function App() {
   const ref = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="App">
+    <div
+      className="App"
+      style={{
+        background: '#000',
+        width: '100%',
+        height: '100%',
+      }}
+    >
       <div ref={ref}></div>
       <button
         onClick={async () => {

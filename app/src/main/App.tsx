@@ -82,7 +82,7 @@ function Page1() {
           //   icon: '/vite.svg',
           // });
           // console.log('=======');
-          const w = new WebviewWindow('Wallpaper', {
+          const w = new WebviewWindow('Wallpaper' + new Date().getTime(), {
             url: '/built-in/wallpaper/src/index.html',
           });
 
@@ -141,9 +141,16 @@ function Page1() {
           );
 
           const htmlUri = convertFileSrc(a);
+          let body = document.querySelector('body');
 
-          setUrl(htmlUri);
-          console.log(htmlUri);
+          let div = document.createElement('div');
+          div.className = 'insert-iframe';
+          div.innerHTML = `<iframe id="inlineFrameExample" scrolling="no" frameBorder="0" title="Inline Frame Example" width="300" height="200" style="border:none" src=${htmlUri}></iframe>`;
+
+          body?.append(div);
+
+          // setUrl(htmlUri);
+          // console.log(htmlUri);
           // await appWindow.setFullscreen(true);
           // await appWindow.maximize();
 
@@ -159,8 +166,10 @@ function Page1() {
           // console.log(r);
         }}
       >
-        Plugin
+        Iframe
       </button>
+
+      <button onClick={async () => {}}>Web Worker</button>
 
       <button
         onClick={async () => {
