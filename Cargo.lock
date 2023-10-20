@@ -2567,6 +2567,7 @@ dependencies = [
 name = "plugkit-app"
 version = "0.0.1"
 dependencies = [
+ "log",
  "plugkit-addon-log",
  "plugkit-core",
  "serde",

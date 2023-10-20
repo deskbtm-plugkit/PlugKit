@@ -23,6 +23,7 @@ tauri = { workspace = true, features = [
 ] }
 tauri-runtime-wry = { workspace = true }
 plugkit-core = { workspace = true }
+log = { workspace = true }
 plugkit-addon-log = { workspace = true, features = ["colored"] }
 
 
